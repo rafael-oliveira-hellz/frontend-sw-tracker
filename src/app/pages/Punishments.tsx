@@ -2,6 +2,7 @@ import {
   AlertCircle,
   ArrowLeft,
   CalendarDays,
+  FileDown,
   Loader2,
   RefreshCcw,
   ShieldAlert,
@@ -61,6 +62,14 @@ const formatWeekLabel = (punishment: GuildWeeklyPunishmentDto) =>
     day: "2-digit",
     month: "2-digit",
   })}`;
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 
 export default function Punishments() {
   const { userData, isAdmin, accessToken } = useData();
@@ -137,6 +146,11 @@ export default function Punishments() {
     );
   }, [visiblePunishments]);
 
+  const punishedThisWeek = useMemo(
+    () => visiblePunishments.filter((punishment) => punishment.punishmentApplied),
+    [visiblePunishments],
+  );
+
   const handleRunEvaluation = async () => {
     if (!accessToken) {
       return;
@@ -164,6 +178,93 @@ export default function Punishments() {
     } finally {
       setIsRunning(false);
     }
+  };
+
+  const handleExportPdf = () => {
+    if (punishedThisWeek.length === 0) {
+      setError("Não há membros suspensos na semana selecionada para exportar.");
+      return;
+    }
+
+    const weekLabel = formatWeekLabel(punishedThisWeek[0]);
+    const rows = punishedThisWeek
+      .map((punishment) => {
+        const punishedEvents = punishment.punishedEventKeys.length
+          ? punishment.punishedEventKeys
+              .map((eventKey) => eventLabelMap[eventKey] ?? eventKey)
+              .join(", ")
+          : "Nenhum";
+        const details = punishment.events
+          .filter((event) => event.punishmentApplied)
+          .map(
+            (event) =>
+              `<li><strong>${escapeHtml(event.label)}:</strong> ${escapeHtml(event.reason)} (${event.completed}/${event.expected})</li>`,
+          )
+          .join("");
+
+        return `
+          <section class="card">
+            <div class="row">
+              <div>
+                <h2>${escapeHtml(punishment.memberName)}</h2>
+                <p><strong>Função:</strong> ${escapeHtml(formatRole(punishment.role))}</p>
+                <p><strong>Conteúdos:</strong> ${escapeHtml(punishedEvents)}</p>
+                <p><strong>Resumo:</strong> ${escapeHtml(punishment.reasonSummary)}</p>
+                ${
+                  punishment.removalReasonSummary
+                    ? `<p><strong>Remoção:</strong> ${escapeHtml(punishment.removalReasonSummary)}</p>`
+                    : ""
+                }
+              </div>
+              <div class="meta">
+                <p><strong>Avaliado em</strong></p>
+                <p>${escapeHtml(formatDateTime(punishment.evaluatedAt))}</p>
+              </div>
+            </div>
+            <ul>${details}</ul>
+          </section>
+        `;
+      })
+      .join("");
+
+    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=900,height=1200");
+    if (!printWindow) {
+      setError("Não foi possível abrir a janela de impressão do PDF.");
+      return;
+    }
+
+    printWindow.document.write(`
+      <!doctype html>
+      <html lang="pt-BR">
+        <head>
+          <meta charset="utf-8" />
+          <title>Punidos da semana ${escapeHtml(weekLabel)}</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #0f172a; margin: 32px; }
+            h1 { font-size: 24px; margin: 0 0 8px; }
+            .subtitle { color: #475569; margin-bottom: 24px; }
+            .card { border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; margin-bottom: 16px; break-inside: avoid; }
+            .row { display: flex; justify-content: space-between; gap: 16px; }
+            .meta { min-width: 220px; text-align: right; }
+            h2 { font-size: 18px; margin: 0 0 8px; }
+            p { margin: 4px 0; line-height: 1.4; }
+            ul { margin: 12px 0 0 18px; padding: 0; }
+            li { margin-bottom: 6px; line-height: 1.4; }
+            @media print {
+              body { margin: 18px; }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Lista de suspensos da semana</h1>
+          <p class="subtitle">Semana ${escapeHtml(weekLabel)} • ${punishedThisWeek.length} membro(s)</p>
+          ${rows}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   if (!userData || !isAdmin()) {
@@ -229,6 +330,16 @@ export default function Punishments() {
                   Atualizar punições
                 </>
               )}
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleExportPdf}
+              disabled={punishedThisWeek.length === 0}
+              className="clandestino-action-button border-amber-500/40 bg-gradient-to-b from-amber-900/95 to-orange-950/95 !text-amber-50 hover:border-amber-400/70 hover:from-amber-800 hover:to-orange-900"
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              Exportar em PDF
             </Button>
           </div>
         </div>
