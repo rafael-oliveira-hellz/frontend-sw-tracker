@@ -227,13 +227,7 @@ export default function Punishments() {
       })
       .join("");
 
-    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=900,height=1200");
-    if (!printWindow) {
-      setError("Não foi possível abrir a janela de impressão do PDF.");
-      return;
-    }
-
-    printWindow.document.write(`
+    const printableHtml = `
       <!doctype html>
       <html lang="pt-BR">
         <head>
@@ -261,10 +255,44 @@ export default function Punishments() {
           ${rows}
         </body>
       </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+    `;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    iframe.setAttribute("aria-hidden", "true");
+    document.body.appendChild(iframe);
+
+    const iframeDocument = iframe.contentWindow?.document;
+    if (!iframeDocument || !iframe.contentWindow) {
+      iframe.remove();
+      setError("Não foi possível preparar a impressão do PDF.");
+      return;
+    }
+
+    iframeDocument.open();
+    iframeDocument.write(printableHtml);
+    iframeDocument.close();
+
+    const cleanup = () => {
+      window.setTimeout(() => iframe.remove(), 1000);
+    };
+
+    iframe.onload = () => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      cleanup();
+    };
+
+    window.setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      cleanup();
+    }, 250);
   };
 
   if (!userData || !isAdmin()) {
