@@ -187,6 +187,7 @@ export default function Punishments() {
     }
 
     const weekLabel = formatWeekLabel(punishedThisWeek[0]);
+    const fileTitle = `lista-suspensos-semana-${punishedThisWeek[0].weekKey}`;
     const rows = punishedThisWeek
       .map((punishment) => {
         const punishedEvents = punishment.punishedEventKeys.length
@@ -232,7 +233,7 @@ export default function Punishments() {
       <html lang="pt-BR">
         <head>
           <meta charset="utf-8" />
-          <title>Punidos da semana ${escapeHtml(weekLabel)}</title>
+          <title>${escapeHtml(fileTitle)}</title>
           <style>
             body { font-family: Arial, sans-serif; color: #0f172a; margin: 32px; }
             h1 { font-size: 24px; margin: 0 0 8px; }
@@ -282,17 +283,19 @@ export default function Punishments() {
       window.setTimeout(() => iframe.remove(), 1000);
     };
 
-    iframe.onload = () => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-      cleanup();
+    const printOnce = () => {
+      const frameWindow = iframe.contentWindow;
+      if (!frameWindow) {
+        cleanup();
+        return;
+      }
+
+      frameWindow.onafterprint = cleanup;
+      frameWindow.focus();
+      frameWindow.print();
     };
 
-    window.setTimeout(() => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-      cleanup();
-    }, 250);
+    iframe.onload = printOnce;
   };
 
   if (!userData || !isAdmin()) {
