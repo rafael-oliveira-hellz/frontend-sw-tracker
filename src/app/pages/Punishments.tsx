@@ -278,11 +278,16 @@ export default function Punishments() {
       <html lang="pt-BR">
         <head>
           <meta charset="utf-8" />
+          <meta name="viewport" content="width=1024, initial-scale=1" />
           <title>${escapeHtml(fileTitle)}</title>
           <style>
-            body { font-family: Arial, sans-serif; color: #111827; margin: 32px; background: #ffffff; }
+            @page { size: A4; margin: 14mm; }
+            * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            html, body { width: 210mm; min-width: 210mm; margin: 0; padding: 0; background: #ffffff; }
+            body { font-family: Arial, sans-serif; color: #111827; }
+            .page { width: 182mm; margin: 0 auto; }
             h1 { font-size: 24px; margin: 0 0 8px; color: #0f172a; }
-            .subtitle { color: #334155; margin-bottom: 24px; font-weight: 600; }
+            .subtitle { color: #334155; margin: 0 0 20px; font-weight: 600; }
             .card { border: 1px solid #94a3b8; border-radius: 12px; padding: 16px; margin-bottom: 16px; break-inside: avoid; background: #ffffff; }
             .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
             .pill { border: 1px solid #93c5fd; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 700; color: #1d4ed8; }
@@ -303,15 +308,17 @@ export default function Punishments() {
             td:nth-child(2) { white-space: nowrap; font-weight: 700; color: #0f172a; width: 92px; }
             td:nth-child(1) { width: 150px; font-weight: 700; color: #0f172a; }
             @media print {
-              body { margin: 18px; }
-              .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+              html, body { width: auto; min-width: 0; }
+              .page { width: auto; margin: 0; }
             }
           </style>
         </head>
         <body>
-          <h1>Lista de suspensos da semana</h1>
-          <p class="subtitle">Semana ${escapeHtml(weekLabel)} • ${punishedThisWeek.length} membro(s)</p>
-          ${rows}
+          <main class="page">
+            <h1>Lista de suspensos da semana</h1>
+            <p class="subtitle">Semana ${escapeHtml(weekLabel)} • ${punishedThisWeek.length} membro(s)</p>
+            ${rows}
+          </main>
         </body>
       </html>
     `;
