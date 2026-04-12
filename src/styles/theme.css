@@ -1,0 +1,534 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --clandestino-bg: #09070b;
+  --clandestino-surface: #111827;
+  --clandestino-navy: #15294b;
+  --clandestino-blue: #59c0ff;
+  --clandestino-gold: #d8a764;
+  --clandestino-ivory: #f4ead6;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  .clandestino-shell {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top center, rgb(89 192 255 / 0.2), transparent 28%),
+      radial-gradient(circle at bottom left, rgb(216 167 100 / 0.12), transparent 24%),
+      radial-gradient(circle at right center, rgb(21 41 75 / 0.45), transparent 32%),
+      linear-gradient(180deg, #050507 0%, #0a1020 48%, #0a1324 100%);
+  }
+
+  .clandestino-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(120deg, rgb(255 255 255 / 0.02), transparent 18%, transparent 82%, rgb(255 255 255 / 0.02)),
+      radial-gradient(circle at 50% 18%, rgb(244 234 214 / 0.06), transparent 18%);
+  }
+
+  .clandestino-brand-title {
+    background: linear-gradient(90deg, var(--clandestino-ivory) 0%, var(--clandestino-gold) 48%, #f7c879 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .clandestino-action-button {
+    min-height: 3rem;
+    min-width: 10.5rem;
+    justify-content: center;
+    border-radius: 1rem;
+    border-width: 1px;
+    padding-inline: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    box-shadow:
+      0 12px 30px rgb(2 6 23 / 0.28),
+      inset 0 1px 0 rgb(255 255 255 / 0.08);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .clandestino-action-button:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 16px 34px rgb(2 6 23 / 0.38),
+      inset 0 1px 0 rgb(255 255 255 / 0.12);
+  }
+
+  .clandestino-action-button--refresh {
+    border-color: rgb(89 192 255 / 0.38);
+    background: linear-gradient(180deg, rgb(18 42 72 / 0.96), rgb(8 20 39 / 0.96));
+    color: #c9f3ff;
+    text-shadow: 0 1px 8px rgb(89 192 255 / 0.2);
+  }
+
+  .clandestino-action-button--refresh:hover {
+    border-color: rgb(89 192 255 / 0.7);
+    background: linear-gradient(180deg, rgb(24 56 96 / 0.98), rgb(10 27 49 / 0.98));
+    color: #f2fdff;
+  }
+
+  .clandestino-action-button--admin {
+    border-color: rgb(216 167 100 / 0.42);
+    background: linear-gradient(180deg, rgb(70 48 15 / 0.96), rgb(33 23 8 / 0.96));
+    color: #ffe6b2;
+    text-shadow: 0 1px 8px rgb(216 167 100 / 0.2);
+  }
+
+  .clandestino-action-button--admin:hover {
+    border-color: rgb(247 200 121 / 0.75);
+    background: linear-gradient(180deg, rgb(92 63 20 / 0.98), rgb(49 33 10 / 0.98));
+    color: #fff8ea;
+  }
+
+  .clandestino-action-button--logout {
+    border-color: rgb(148 163 184 / 0.22);
+    background: linear-gradient(180deg, rgb(22 30 48 / 0.96), rgb(10 15 28 / 0.96));
+    color: rgb(241 245 249 / 0.96);
+    text-shadow: 0 1px 8px rgb(148 163 184 / 0.12);
+  }
+
+  .clandestino-action-button--logout:hover {
+    border-color: rgb(148 163 184 / 0.45);
+    background: linear-gradient(180deg, rgb(31 41 63 / 0.98), rgb(15 23 42 / 0.98));
+    color: white;
+  }
+
+  .clandestino-overview-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    border-radius: 1.35rem;
+    padding: 1.4rem;
+  }
+
+  .clandestino-overview-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .clandestino-overview-card__icon {
+    border-radius: 1rem;
+    padding: 0.95rem;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  }
+
+  .clandestino-overview-card__metric {
+    text-align: right;
+    line-height: 1.1;
+  }
+
+  .clandestino-overview-card__title {
+    margin-top: 0.25rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .clandestino-overview-card__subtitle {
+    margin-top: 0.2rem;
+    font-size: 0.8rem;
+    color: rgb(148 163 184 / 0.92);
+  }
+
+  .clandestino-overview-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .clandestino-overview-card__caption {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: rgb(191 202 219 / 0.95);
+  }
+
+  .clandestino-overview-card__hint {
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: rgb(120 137 162 / 0.95);
+  }
+
+  .clandestino-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .clandestino-toolbar > * {
+    flex: 0 0 auto;
+  }
+
+  .clandestino-page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .clandestino-page-header__eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgb(125 211 252 / 0.84);
+  }
+
+  .clandestino-page-header__title {
+    line-height: 1.05;
+  }
+
+  .clandestino-page-header__description {
+    max-width: 62rem;
+    font-size: 0.98rem;
+    line-height: 1.75;
+    color: rgb(191 202 219 / 0.95);
+  }
+
+  .clandestino-badge {
+    min-height: 1.8rem;
+    border-radius: 999px;
+    padding-inline: 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  }
+
+  .clandestino-badge--neutral {
+    border-color: rgb(148 163 184 / 0.22);
+    background: rgb(15 23 42 / 0.72);
+    color: rgb(226 232 240 / 0.95);
+  }
+
+  .clandestino-badge--success {
+    border-color: rgb(16 185 129 / 0.32);
+    background: rgb(16 185 129 / 0.12);
+    color: rgb(167 243 208 / 0.98);
+  }
+
+  .clandestino-badge--warning {
+    border-color: rgb(245 158 11 / 0.34);
+    background: rgb(245 158 11 / 0.12);
+    color: rgb(253 230 138 / 0.98);
+  }
+
+  .clandestino-badge--danger {
+    border-color: rgb(239 68 68 / 0.34);
+    background: rgb(239 68 68 / 0.12);
+    color: rgb(254 202 202 / 0.98);
+  }
+
+  .clandestino-panel-card {
+    border-radius: 1.4rem;
+    border-width: 1px;
+    background: linear-gradient(180deg, rgb(15 23 42 / 0.72), rgb(10 15 28 / 0.88));
+    box-shadow:
+      0 18px 40px rgb(2 6 23 / 0.22),
+      inset 0 1px 0 rgb(255 255 255 / 0.04);
+  }
+
+  .clandestino-stat-card {
+    border-radius: 1.25rem;
+    border-width: 1px;
+    background: linear-gradient(180deg, rgb(15 23 42 / 0.84), rgb(9 14 26 / 0.92));
+    box-shadow:
+      0 14px 34px rgb(2 6 23 / 0.18),
+      inset 0 1px 0 rgb(255 255 255 / 0.04);
+  }
+
+  .clandestino-stat-card__header {
+    padding-bottom: 0.75rem;
+  }
+
+  .clandestino-stat-card__value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.05;
+    color: white;
+  }
+
+  .clandestino-stat-card__hint {
+    margin-top: 0.45rem;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: rgb(148 163 184 / 0.88);
+  }
+
+  .clandestino-event-frame {
+    border-radius: 1.5rem;
+    border-width: 1px;
+    box-shadow:
+      0 22px 44px rgb(2 6 23 / 0.22),
+      inset 0 1px 0 rgb(255 255 255 / 0.04);
+  }
+
+  .clandestino-event-inner {
+    border-radius: 1.15rem;
+    padding: 1.15rem;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.03);
+  }
+}
+
+@media (max-width: 768px) {
+  .clandestino-toolbar {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .clandestino-toolbar > * {
+    width: 100%;
+  }
+
+  .clandestino-action-button {
+    min-width: 0;
+    width: 100%;
+    min-height: 2.85rem;
+    padding-inline: 0.95rem;
+  }
+
+  .clandestino-page-header {
+    gap: 0.45rem;
+  }
+
+  .clandestino-page-header__eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+  }
+
+  .clandestino-page-header__title {
+    line-height: 1.08;
+  }
+
+  .clandestino-page-header__description {
+    font-size: 0.92rem;
+    line-height: 1.62;
+  }
+
+  .clandestino-overview-card {
+    gap: 0.85rem;
+    padding: 1.05rem;
+  }
+
+  .clandestino-overview-card__top {
+    gap: 0.8rem;
+  }
+
+  .clandestino-overview-card__title {
+    font-size: 1.45rem;
+  }
+
+  .clandestino-overview-card__caption,
+  .clandestino-overview-card__hint,
+  .clandestino-page-header__description {
+    overflow-wrap: anywhere;
+  }
+
+  .clandestino-stat-card__value {
+    font-size: 1.45rem;
+  }
+
+  .clandestino-event-inner {
+    padding: 0.95rem;
+  }
+
+  .clandestino-panel-card,
+  .clandestino-stat-card,
+  .clandestino-event-frame {
+    border-radius: 1.1rem;
+  }
+}
