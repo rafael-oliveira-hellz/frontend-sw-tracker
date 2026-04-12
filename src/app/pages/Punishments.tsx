@@ -187,7 +187,7 @@ export default function Punishments() {
     }
 
     const weekLabel = formatWeekLabel(punishedThisWeek[0]);
-    const fileTitle = `lista-suspensos-semana-${punishedThisWeek[0].weekKey}`;
+    const fileTitle = `CD9_lista_suspensos_semana_${punishedThisWeek[0].weekKey}`;
     const rows = punishedThisWeek
       .map((punishment) => {
         const punishedEvents = punishment.punishedEventKeys.length
