@@ -36,6 +36,14 @@ const EVENT_ACCENT: Record<GuildActivityEventKey, string> = {
 
 const formatPercent = (value: number) => `${value.toFixed(0)}%`;
 
+const formatHighlightLabel = (eventKey: GuildActivityEventKey, label: string, position: number) => {
+  if (!["labyrinth", "subjugation"].includes(eventKey)) {
+    return label;
+  }
+
+  return label.replace(/Rank\s+\d+/i, `Top ${position}`);
+};
+
 function DailyBreakdownList({ items }: { items: DailyAttackBreakdown[] }) {
   if (items.length === 0) {
     return <p className="text-xs text-slate-500">Nenhum ataque com data identificada nesta semana.</p>;
@@ -113,7 +121,7 @@ function EventCard({ event }: { event: GuildActivityEventCard }) {
                   Nenhum registro consolidado ainda.
                 </div>
               ) : (
-                event.topMembers.map((member) => (
+                event.topMembers.map((member, index) => (
                   <div
                     key={`${event.eventKey}-${member.wizardId}`}
                     className="rounded-lg border border-slate-800 bg-slate-950/50 p-3"
@@ -124,7 +132,9 @@ function EventCard({ event }: { event: GuildActivityEventCard }) {
                         {member.completed}/{member.expected}
                       </Badge>
                     </div>
-                    <p className="mt-1 text-xs text-slate-400">{member.label}</p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      {formatHighlightLabel(event.eventKey, member.label, index + 1)}
+                    </p>
                   </div>
                 ))
               )}

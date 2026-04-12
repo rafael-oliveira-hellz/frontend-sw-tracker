@@ -48,6 +48,7 @@ export type EventWindowProgress = {
 };
 
 export type WeeklyEventMemberProgress = {
+  hasData: boolean;
   completed: number;
   expected: number;
   completionRate: number;
@@ -482,8 +483,17 @@ const buildGuildWarProgress = (
   });
   const decisiveBattles = outcomes.wins + outcomes.losses + outcomes.draws;
   const warsCompleted = [firstWindow, secondWindow].filter((window) => window.completed >= window.expected).length;
+  const hasData =
+    member.coverage.guildWarAttacks ||
+    member.coverage.guildWarDefenses ||
+    member.guildWar.currentAttackCount !== undefined ||
+    member.guildWar.currentEnergy !== undefined ||
+    member.guildWar.attacks.length > 0 ||
+    member.guildWar.defenses.length > 0 ||
+    member.guildWar.teams.length > 0;
 
   return {
+    hasData,
     completed: attacks.length,
     expected: 20,
     completionRate: clampPercentage((attacks.length / 20) * 100),
@@ -519,8 +529,15 @@ const buildSiegeProgress = (
   const secondWindow = buildWindowProgress("siege-2", "Siege 2", "Quinta e sexta", 30, filterAttacksByWeekdays(attacks, [4, 5]));
   const decisiveBattles = outcomes.wins + outcomes.losses + outcomes.draws;
   const siegeRoundsCompleted = [firstWindow, secondWindow].filter((window) => window.completed >= window.expected).length;
+  const hasData =
+    member.coverage.siegeAttacks ||
+    member.coverage.siegeDefenses ||
+    member.siege.attacks.length > 0 ||
+    member.siege.defenses.length > 0 ||
+    member.siege.teams.length > 0;
 
   return {
+    hasData,
     completed: attacks.length,
     expected: 60,
     completionRate: clampPercentage((attacks.length / 60) * 100),
@@ -549,6 +566,12 @@ const buildLabyrinthProgress = (member: GuildCurrentMemberStateDto): WeeklyEvent
   const completed = participated ? 1 : 0;
 
   return {
+    hasData:
+      member.coverage.labyrinth ||
+      (member.labyrinth.score ?? 0) > 0 ||
+      (member.labyrinth.contributionRate ?? 0) > 0 ||
+      member.labyrinth.rank !== undefined ||
+      member.labyrinth.isMvp,
     completed,
     expected: 1,
     completionRate: completed * 100,
@@ -577,6 +600,11 @@ const buildSubjugationProgress = (member: GuildCurrentMemberStateDto): WeeklyEve
   const completed = participated ? 1 : 0;
 
   return {
+    hasData:
+      member.coverage.subjugation ||
+      (member.subjugation.clearScore ?? 0) > 0 ||
+      (member.subjugation.contributeRatio ?? 0) > 0 ||
+      member.subjugation.rank !== undefined,
     completed,
     expected: 1,
     completionRate: completed * 100,
@@ -645,7 +673,7 @@ const buildEventCard = (
     progress: row[eventKey],
   }));
   const totalMembers = eventRows.length;
-  const membersWithData = eventRows.filter((item) => item.progress.completed > 0).length;
+  const membersWithData = eventRows.filter((item) => item.progress.hasData).length;
   const fullyCompletedMembers = eventRows.filter((item) => item.progress.completionRate >= 100).length;
   const totalCompleted = eventRows.reduce((sum, item) => sum + item.progress.completed, 0);
   const totalExpected = eventRows.reduce((sum, item) => sum + item.progress.expected, 0);
