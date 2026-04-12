@@ -71,6 +71,16 @@ const escapeHtml = (value: string) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
+const sanitizeFileName = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[<>:"/\\|?*]+/g, "-")
+    .replace(/\s+/g, "_")
+    .replace(/-+/g, "-")
+    .replace(/_+/g, "_")
+    .replace(/^[-_.]+|[-_.]+$/g, "");
+
 export default function Punishments() {
   const { userData, isAdmin, accessToken } = useData();
   const [punishments, setPunishments] = useState<GuildWeeklyPunishmentDto[]>([]);
@@ -187,7 +197,7 @@ export default function Punishments() {
     }
 
     const weekLabel = formatWeekLabel(punishedThisWeek[0]);
-    const fileTitle = `CD9_lista_suspensos_semana_${punishedThisWeek[0].weekKey}`;
+    const fileTitle = sanitizeFileName(`CD9_lista_suspensos_semana_${punishedThisWeek[0].weekKey}`);
     const rows = punishedThisWeek
       .map((punishment) => {
         const punishedEvents = punishment.punishedEventKeys.length
