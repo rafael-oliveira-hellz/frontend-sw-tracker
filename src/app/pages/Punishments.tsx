@@ -245,16 +245,17 @@ export default function Punishments() {
           <meta charset="utf-8" />
           <title>${escapeHtml(fileTitle)}</title>
           <style>
-            body { font-family: Arial, sans-serif; color: #0f172a; margin: 32px; }
-            h1 { font-size: 24px; margin: 0 0 8px; }
-            .subtitle { color: #475569; margin-bottom: 24px; }
-            .card { border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; margin-bottom: 16px; break-inside: avoid; }
+            body { font-family: Arial, sans-serif; color: #111827; margin: 32px; background: #ffffff; }
+            h1 { font-size: 24px; margin: 0 0 8px; color: #0f172a; }
+            .subtitle { color: #334155; margin-bottom: 24px; font-weight: 600; }
+            .card { border: 1px solid #94a3b8; border-radius: 12px; padding: 16px; margin-bottom: 16px; break-inside: avoid; background: #ffffff; }
             .row { display: flex; justify-content: space-between; gap: 16px; }
-            .meta { min-width: 220px; text-align: right; }
-            h2 { font-size: 18px; margin: 0 0 8px; }
-            p { margin: 4px 0; line-height: 1.4; }
+            .meta { min-width: 220px; text-align: right; color: #0f172a; }
+            h2 { font-size: 18px; margin: 0 0 8px; color: #020617; }
+            p { margin: 4px 0; line-height: 1.4; color: #1e293b; }
+            strong { color: #020617; }
             ul { margin: 12px 0 0 18px; padding: 0; }
-            li { margin-bottom: 6px; line-height: 1.4; }
+            li { margin-bottom: 6px; line-height: 1.4; color: #1e293b; }
             @media print {
               body { margin: 18px; }
             }
