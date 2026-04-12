@@ -252,11 +252,11 @@ export default function Punishments() {
                 <p className="text-lg font-semibold text-white">{summary.total}</p>
               </div>
               <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
-                <p className="text-xs text-red-200">De castigo</p>
+                <p className="text-xs text-red-200">Suspensos</p>
                 <p className="text-lg font-semibold text-white">{summary.punished}</p>
               </div>
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-                <p className="text-xs text-amber-200">Em carência</p>
+                <p className="text-xs text-amber-200">Ainda suspensos</p>
                 <p className="text-lg font-semibold text-white">{summary.cooldown}</p>
               </div>
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
@@ -338,8 +338,8 @@ export default function Punishments() {
                             <DisciplineStatus
                               punishment={punishment}
                               labels={{
-                                punished: "De castigo",
-                                cooldown: "Em carência",
+                                punished: "Suspenso",
+                                cooldown: "Suspenso",
                                 clear: "Sem punição",
                               }}
                             />

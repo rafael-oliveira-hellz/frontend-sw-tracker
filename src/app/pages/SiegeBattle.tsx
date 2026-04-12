@@ -182,8 +182,8 @@ export default function SiegeBattle() {
                   punishment={currentPunishment}
                   eventKey="siege"
                   labels={{
-                    punished: "De castigo em assalto nesta semana",
-                    cooldown: "Em carência de punição",
+                    punished: "Suspenso em assalto nesta semana",
+                    cooldown: "Suspenso em assalto nesta semana",
                     clear: "Assalto liberado nesta semana",
                   }}
                   showReason

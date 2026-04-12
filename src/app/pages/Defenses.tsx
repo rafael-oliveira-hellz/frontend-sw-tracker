@@ -114,8 +114,8 @@ export default function Defenses() {
               className="mt-3"
               punishment={currentPunishment}
               labels={{
-                punished: "De castigo na avaliação mais recente",
-                cooldown: "Em carência de punição",
+                punished: "Suspenso na avaliação mais recente",
+                cooldown: "Suspenso na avaliação mais recente",
                 clear: "Sem punição recente",
               }}
               showReason

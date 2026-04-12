@@ -90,8 +90,8 @@ function RankingSection({
                             } as GuildWeeklyPunishmentDto)
                     }
                     labels={{
-                      punished: "De castigo",
-                      cooldown: "Em carência",
+                      punished: "Suspenso",
+                      cooldown: "Suspenso",
                       clear: "Liberado",
                     }}
                   />
@@ -366,7 +366,7 @@ export default function GuildLeadershipRankingPanel({
                 : "border-slate-700 bg-slate-900/70 text-slate-300"
             }`}
           >
-            De castigo ({punishmentCounts.punished})
+            Suspensos ({punishmentCounts.punished})
           </button>
           <button
             type="button"
@@ -377,7 +377,7 @@ export default function GuildLeadershipRankingPanel({
                 : "border-slate-700 bg-slate-900/70 text-slate-300"
             }`}
           >
-            Em carência ({punishmentCounts.cooldown})
+            Ainda suspensos ({punishmentCounts.cooldown})
           </button>
           <button
             type="button"
@@ -437,7 +437,7 @@ export default function GuildLeadershipRankingPanel({
             items={removalMarkedMembers}
           />
           <RankingSection
-            title="De castigo na semana"
+            title="Suspensos na semana"
             description="Membros que ficaram punidos na semana selecionada por não cumprir algum conteúdo obrigatório."
             emptyLabel="Ninguém ficou de castigo nesta semana."
             icon={ShieldAlert}
@@ -445,7 +445,7 @@ export default function GuildLeadershipRankingPanel({
             items={filterItemsByDiscipline(punishedMembers)}
           />
           <RankingSection
-            title="Em carência de 15 dias"
+            title="Ainda suspensos por 15 dias"
             description="Membros que não recebem nova punição nesta semana porque já foram punidos recentemente."
             emptyLabel="Ninguém está em carência nesta semana."
             icon={ShieldCheck}

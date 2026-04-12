@@ -148,8 +148,8 @@ export default function GuildBattle() {
                   punishment={currentPunishment}
                   eventKey="guildWar"
                   labels={{
-                    punished: "De castigo em GW nesta semana",
-                    cooldown: "Em carência de punição",
+                    punished: "Suspenso em GW nesta semana",
+                    cooldown: "Suspenso em GW nesta semana",
                     clear: "GW liberada nesta semana",
                   }}
                   showReason

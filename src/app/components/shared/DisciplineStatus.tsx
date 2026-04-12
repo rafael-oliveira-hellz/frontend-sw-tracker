@@ -14,8 +14,8 @@ type DisciplineLabels = {
 };
 
 const defaultLabels: DisciplineLabels = {
-  punished: "De castigo",
-  cooldown: "Em carência",
+  punished: "Suspenso",
+  cooldown: "Suspenso",
   clear: "Liberado",
 };
 

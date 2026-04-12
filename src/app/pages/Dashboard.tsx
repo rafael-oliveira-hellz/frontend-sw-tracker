@@ -239,8 +239,8 @@ export default function Dashboard() {
                   className="mt-3"
                   punishment={currentPunishment}
                   labels={{
-                    punished: "De castigo nesta semana",
-                    cooldown: "Em carência de punição",
+                    punished: "Suspenso nesta semana",
+                    cooldown: "Suspenso nesta semana",
                     clear: "Sem punição nesta semana",
                   }}
                   showReason
@@ -302,7 +302,7 @@ export default function Dashboard() {
                     eventKey="labyrinth"
                     labels={{
                       punished: "Labirinto bloqueado por castigo",
-                      cooldown: "Labirinto em carência",
+                      cooldown: "Labirinto suspenso",
                       clear: "Labirinto liberado",
                     }}
                   />
@@ -332,7 +332,7 @@ export default function Dashboard() {
                     eventKey="siege"
                     labels={{
                       punished: "Assalto bloqueado por castigo",
-                      cooldown: "Assalto em carência",
+                      cooldown: "Assalto suspenso",
                       clear: "Assalto liberado",
                     }}
                   />
@@ -365,7 +365,7 @@ export default function Dashboard() {
                     eventKey="guildWar"
                     labels={{
                       punished: "GW bloqueada por castigo",
-                      cooldown: "GW em carência",
+                      cooldown: "GW suspensa",
                       clear: "GW liberada",
                     }}
                   />
@@ -398,7 +398,7 @@ export default function Dashboard() {
                     eventKey="subjugation"
                     labels={{
                       punished: "Subjugação bloqueada por castigo",
-                      cooldown: "Subjugação em carência",
+                      cooldown: "Subjugação suspensa",
                       clear: "Subjugação liberada",
                     }}
                   />

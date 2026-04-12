@@ -468,8 +468,8 @@ export default function MembersAccess() {
                                 <p className="text-sm text-white">
                                   {resolveDisciplineCopy(row.punishment, {
                                     labels: {
-                                      punished: "De castigo",
-                                      cooldown: "Em carência",
+                                      punished: "Suspenso",
+                                      cooldown: "Suspenso",
                                       clear: "Sem punição recente",
                                     },
                                   }).label}
