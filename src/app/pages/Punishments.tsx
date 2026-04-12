@@ -203,36 +203,71 @@ export default function Punishments() {
         const punishedEvents = punishment.punishedEventKeys.length
           ? punishment.punishedEventKeys
               .map((eventKey) => eventLabelMap[eventKey] ?? eventKey)
-              .join(", ")
+              .join(" • ")
           : "Nenhum";
         const details = punishment.events
           .filter((event) => event.punishmentApplied)
           .map(
             (event) =>
-              `<li><strong>${escapeHtml(event.label)}:</strong> ${escapeHtml(event.reason)} (${event.completed}/${event.expected})</li>`,
+              `
+                <tr>
+                  <td>${escapeHtml(event.label)}</td>
+                  <td>${event.completed}/${event.expected}</td>
+                  <td>${escapeHtml(event.reason)}</td>
+                </tr>
+              `,
           )
           .join("");
 
         return `
           <section class="card">
-            <div class="row">
+            <div class="card-header">
               <div>
                 <h2>${escapeHtml(punishment.memberName)}</h2>
-                <p><strong>Função:</strong> ${escapeHtml(formatRole(punishment.role))}</p>
-                <p><strong>Conteúdos:</strong> ${escapeHtml(punishedEvents)}</p>
-                <p><strong>Resumo:</strong> ${escapeHtml(punishment.reasonSummary)}</p>
-                ${
-                  punishment.removalReasonSummary
-                    ? `<p><strong>Remoção:</strong> ${escapeHtml(punishment.removalReasonSummary)}</p>`
-                    : ""
-                }
+                <p class="muted">Suspenso na semana ${escapeHtml(weekLabel)}</p>
               </div>
-              <div class="meta">
-                <p><strong>Avaliado em</strong></p>
-                <p>${escapeHtml(formatDateTime(punishment.evaluatedAt))}</p>
+              <div class="pill">${escapeHtml(formatRole(punishment.role))}</div>
+            </div>
+
+            <div class="facts">
+              <div class="fact">
+                <span class="fact-label">Conteúdos</span>
+                <span class="fact-value">${escapeHtml(punishedEvents)}</span>
+              </div>
+              <div class="fact">
+                <span class="fact-label">Avaliado em</span>
+                <span class="fact-value">${escapeHtml(formatDateTime(punishment.evaluatedAt))}</span>
+              </div>
+              <div class="fact">
+                <span class="fact-label">Próxima elegibilidade</span>
+                <span class="fact-value">${escapeHtml(
+                  punishment.nextEligiblePenaltyAt
+                    ? formatDateTime(punishment.nextEligiblePenaltyAt)
+                    : "Sem bloqueio de carência",
+                )}</span>
               </div>
             </div>
-            <ul>${details}</ul>
+
+            <div class="summary-box">
+              <div class="summary-title">Resumo</div>
+              <p>${escapeHtml(punishment.reasonSummary)}</p>
+              ${
+                punishment.removalReasonSummary
+                  ? `<p class="removal"><strong>Remoção:</strong> ${escapeHtml(punishment.removalReasonSummary)}</p>`
+                  : ""
+              }
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Evento</th>
+                  <th>Status</th>
+                  <th>Motivo</th>
+                </tr>
+              </thead>
+              <tbody>${details}</tbody>
+            </table>
           </section>
         `;
       })
@@ -249,15 +284,27 @@ export default function Punishments() {
             h1 { font-size: 24px; margin: 0 0 8px; color: #0f172a; }
             .subtitle { color: #334155; margin-bottom: 24px; font-weight: 600; }
             .card { border: 1px solid #94a3b8; border-radius: 12px; padding: 16px; margin-bottom: 16px; break-inside: avoid; background: #ffffff; }
-            .row { display: flex; justify-content: space-between; gap: 16px; }
-            .meta { min-width: 220px; text-align: right; color: #0f172a; }
-            h2 { font-size: 18px; margin: 0 0 8px; color: #020617; }
+            .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+            .pill { border: 1px solid #93c5fd; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 700; color: #1d4ed8; }
+            .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+            .fact { border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; background: #f8fafc; }
+            .fact-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px; }
+            .fact-value { display: block; font-size: 13px; font-weight: 600; color: #0f172a; }
+            .summary-box { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: #f8fafc; margin-bottom: 14px; }
+            .summary-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 6px; }
+            .muted { color: #64748b; margin: 2px 0 0; font-size: 13px; }
+            .removal { margin-top: 8px; color: #7c2d12; }
+            h2 { font-size: 18px; margin: 0; color: #020617; }
             p { margin: 4px 0; line-height: 1.4; color: #1e293b; }
             strong { color: #020617; }
-            ul { margin: 12px 0 0 18px; padding: 0; }
-            li { margin-bottom: 6px; line-height: 1.4; color: #1e293b; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border-top: 1px solid #e2e8f0; padding: 10px 8px; text-align: left; vertical-align: top; font-size: 13px; color: #1e293b; }
+            th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #64748b; background: #f8fafc; }
+            td:nth-child(2) { white-space: nowrap; font-weight: 700; color: #0f172a; width: 92px; }
+            td:nth-child(1) { width: 150px; font-weight: 700; color: #0f172a; }
             @media print {
               body { margin: 18px; }
+              .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             }
           </style>
         </head>
