@@ -19,6 +19,25 @@ const defaultLabels: DisciplineLabels = {
   clear: "Liberado",
 };
 
+const normalizeDisciplineText = (value?: string) =>
+  (value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+const indicatesWeeklySuspension = (value?: string) => {
+  const normalized = normalizeDisciplineText(value);
+
+  return (
+    normalized.includes("suspenso de gw") ||
+    normalized.includes("suspenso de siege") ||
+    normalized.includes("suspenso em gw") ||
+    normalized.includes("suspenso em assalto") ||
+    normalized.includes("bloqueado por castigo") ||
+    normalized.includes("punicao da semana anterior")
+  );
+};
+
 export function resolveDisciplineState(
   punishment?: GuildWeeklyPunishmentDto | null,
   eventKey?: WeeklyPunishmentEventKey,
@@ -34,11 +53,8 @@ export function resolveDisciplineState(
     }
 
     if (
-      event &&
-      !event.required &&
-      /Suspenso de (GW|Siege)|bloqueado por castigo|nesta semana por punição da semana anterior/i.test(
-        event.reason,
-      )
+      (event && !event.required && indicatesWeeklySuspension(event.reason)) ||
+      indicatesWeeklySuspension(punishment.reasonSummary)
     ) {
       return "punished";
     }
