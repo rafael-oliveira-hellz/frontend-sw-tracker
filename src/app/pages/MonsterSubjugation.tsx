@@ -1,4 +1,4 @@
-﻿import { AlertCircle, ArrowLeft, Droplet, Flame, Loader2, RefreshCcw, Wind } from "lucide-react";
+import { AlertCircle, ArrowLeft, Droplet, Flame, Loader2, RefreshCcw, Skull, Wind } from "lucide-react";
 import { Link } from "react-router";
 
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
@@ -15,6 +15,8 @@ const getElementColor = (element: string) => {
       return "from-blue-500 to-cyan-500";
     case "Vento":
       return "from-green-500 to-emerald-500";
+    case "Boss Slime":
+      return "from-violet-500 to-fuchsia-600";
     default:
       return "from-gray-500 to-gray-600";
   }
@@ -28,6 +30,8 @@ const getElementIcon = (element: string) => {
       return <Droplet className="h-6 w-6" />;
     case "Vento":
       return <Wind className="h-6 w-6" />;
+    case "Boss Slime":
+      return <Skull className="h-6 w-6" />;
     default:
       return null;
   }
@@ -41,12 +45,14 @@ export default function MonsterSubjugation() {
 
   if (!userData) return null;
 
-  const elements = [
-    { label: "Fogo", completed: Boolean(currentMember?.subjugation.clearScore) },
-    { label: "Água", completed: Boolean(currentMember?.subjugation.clearScore) },
-    { label: "Vento", completed: Boolean(currentMember?.subjugation.clearScore) },
+  const hasSubjugationData = Boolean(currentMember?.subjugation.clearScore);
+  const fronts = [
+    { label: "Fogo", completed: hasSubjugationData },
+    { label: "Água", completed: hasSubjugationData },
+    { label: "Vento", completed: hasSubjugationData },
+    { label: "Boss Slime", completed: hasSubjugationData },
   ];
-  const completedElements = currentMember?.subjugation.clearScore ? 1 : 0;
+  const completedFronts = hasSubjugationData ? 1 : 0;
 
   return (
     <div className="clandestino-shell p-4 sm:p-6">
@@ -108,21 +114,21 @@ export default function MonsterSubjugation() {
             <div className="rounded-lg bg-purple-500/10 p-4">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm text-slate-300">Estado atual do ciclo</span>
-                <span className="font-bold text-white">{completedElements} / 3 elementos</span>
+                <span className="font-bold text-white">{completedFronts} / 4 frentes</span>
               </div>
-              <div className="grid grid-cols-3 gap-3">
-                {elements.map((element) => (
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {fronts.map((front) => (
                   <div
-                    key={element.label}
+                    key={front.label}
                     className={`flex flex-col items-center gap-2 rounded-lg p-3 ${
-                      element.completed ? "border-2 border-green-500 bg-green-500/10" : "bg-slate-950/40"
+                      front.completed ? "border-2 border-green-500 bg-green-500/10" : "bg-slate-950/40"
                     }`}
                   >
-                    <div className={`rounded-full bg-gradient-to-br p-2 text-white ${getElementColor(element.label)}`}>
-                      {getElementIcon(element.label)}
+                    <div className={`rounded-full bg-gradient-to-br p-2 text-white ${getElementColor(front.label)}`}>
+                      {getElementIcon(front.label)}
                     </div>
-                    <span className="text-sm font-medium text-white">{element.label}</span>
-                    {element.completed && <span className="text-xs font-semibold text-green-400">Consolidado</span>}
+                    <span className="text-sm font-medium text-center text-white">{front.label}</span>
+                    {front.completed && <span className="text-xs font-semibold text-green-400">Consolidado</span>}
                   </div>
                 ))}
               </div>

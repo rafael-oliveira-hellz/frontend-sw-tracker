@@ -32,6 +32,16 @@ export function resolveDisciplineState(
     if (event?.punishmentApplied) {
       return "punished";
     }
+
+    if (
+      event &&
+      !event.required &&
+      /Suspenso de (GW|Siege)|bloqueado por castigo|nesta semana por punição da semana anterior/i.test(
+        event.reason,
+      )
+    ) {
+      return "punished";
+    }
   } else if (punishment.punishmentApplied) {
     return "punished";
   }
@@ -55,6 +65,9 @@ export function resolveDisciplineCopy(
     ...defaultLabels,
     ...options?.labels,
   };
+  const eventReason = options?.eventKey
+    ? punishment?.events.find((entry) => entry.eventKey === options.eventKey)?.reason
+    : undefined;
 
   return {
     state,
@@ -64,7 +77,7 @@ export function resolveDisciplineCopy(
         : state === "cooldown"
           ? labels.cooldown
           : labels.clear,
-    reasonSummary: punishment?.reasonSummary ?? "",
+    reasonSummary: eventReason ?? punishment?.reasonSummary ?? "",
   };
 }
 
