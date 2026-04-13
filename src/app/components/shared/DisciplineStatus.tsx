@@ -25,15 +25,25 @@ const normalizeDisciplineText = (value?: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-const indicatesWeeklySuspension = (value?: string) => {
+const indicatesWeeklySuspension = (
+  eventKey: WeeklyPunishmentEventKey | undefined,
+  value?: string,
+) => {
+  if (eventKey !== "guildWar" && eventKey !== "siege") {
+    return false;
+  }
+
   const normalized = normalizeDisciplineText(value);
 
   return (
-    normalized.includes("suspenso de gw") ||
-    normalized.includes("suspenso de siege") ||
-    normalized.includes("suspenso em gw") ||
-    normalized.includes("suspenso em assalto") ||
-    normalized.includes("bloqueado por castigo") ||
+    (eventKey === "guildWar" &&
+      (normalized.includes("suspenso de gw") ||
+        normalized.includes("suspenso em gw") ||
+        normalized.includes("gw bloqueada por castigo"))) ||
+    (eventKey === "siege" &&
+      (normalized.includes("suspenso de siege") ||
+        normalized.includes("suspenso em assalto") ||
+        normalized.includes("assalto bloqueado por castigo"))) ||
     normalized.includes("punicao da semana anterior")
   );
 };
@@ -53,8 +63,8 @@ export function resolveDisciplineState(
     }
 
     if (
-      (event && !event.required && indicatesWeeklySuspension(event.reason)) ||
-      indicatesWeeklySuspension(punishment.reasonSummary)
+      (event && !event.required && indicatesWeeklySuspension(eventKey, event.reason)) ||
+      indicatesWeeklySuspension(eventKey, punishment.reasonSummary)
     ) {
       return "punished";
     }

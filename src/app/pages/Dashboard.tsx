@@ -301,8 +301,8 @@ export default function Dashboard() {
                     punishment={currentPunishment}
                     eventKey="labyrinth"
                     labels={{
-                      punished: "Labirinto bloqueado por castigo",
-                      cooldown: "Labirinto suspenso",
+                      punished: "Labirinto pendente",
+                      cooldown: "Labirinto obrigatório",
                       clear: "Labirinto liberado",
                     }}
                   />
@@ -397,8 +397,8 @@ export default function Dashboard() {
                     punishment={currentPunishment}
                     eventKey="subjugation"
                     labels={{
-                      punished: "Subjugação bloqueada por castigo",
-                      cooldown: "Subjugação suspensa",
+                      punished: "Subjugação pendente",
+                      cooldown: "Subjugação obrigatória",
                       clear: "Subjugação liberada",
                     }}
                   />
