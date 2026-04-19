@@ -26,9 +26,9 @@ import {
 } from "../lib/guildImport";
 
 const roleLabelMap: Record<string, string> = {
-  leader: "Líder",
-  "vice-leader": "Vice-líder",
-  senior: "Sênior",
+  leader: "L\u00edder",
+  "vice-leader": "Vice-l\u00edder",
+  senior: "S\u00eanior",
   member: "Membro",
 };
 
@@ -40,7 +40,7 @@ const eventLabelMap: Record<string, string> = {
   guildWarDefenseCompliance: "Alerta GW",
   siegeDefenseCompliance: "Alerta Siege",
   labyrinth: "Labirinto",
-  subjugation: "Subjugação",
+  subjugation: "Subjuga\u00e7\u00e3o",
 };
 
 const formatRole = (role?: string) => roleLabelMap[role ?? "member"] ?? "Membro";
@@ -50,7 +50,7 @@ const formatDateTime = (value?: string) =>
     ? new Date(value).toLocaleString("pt-BR", {
         timeZone: "America/Sao_Paulo",
       })
-    : "Não informado";
+    : "N\u00e3o informado";
 
 const formatWeekLabel = (punishment: GuildWeeklyPunishmentDto) =>
   `${new Date(punishment.weekStart).toLocaleDateString("pt-BR", {
@@ -105,7 +105,7 @@ export default function Punishments() {
         setSelectedWeekKey(next[0].weekKey);
       }
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Falha ao carregar as punições.");
+      setError(loadError instanceof Error ? loadError.message : "Falha ao carregar as puni\u00e7\u00f5es.");
     } finally {
       setIsLoading(false);
     }
@@ -176,14 +176,14 @@ export default function Punishments() {
       await loadPunishments(run.weekKey);
       setMessage(
         run.skipped
-          ? `Avaliação semanal verificada: ${run.reason}`
-          : `Avaliação semanal concluída para ${run.weekKey}. ${run.saved} registro(s) persistido(s).`,
+          ? `Avalia\u00e7\u00e3o semanal verificada: ${run.reason}`
+          : `Avalia\u00e7\u00e3o semanal conclu\u00edda para ${run.weekKey}. ${run.saved} registro(s) persistido(s).`,
       );
     } catch (runError) {
       setError(
         runError instanceof Error
           ? runError.message
-          : "Falha ao executar a avaliação semanal de punições.",
+          : "Falha ao executar a avalia\u00e7\u00e3o semanal de puni\u00e7\u00f5es.",
       );
     } finally {
       setIsRunning(false);
@@ -192,7 +192,7 @@ export default function Punishments() {
 
   const handleExportPdf = () => {
     if (punishedThisWeek.length === 0) {
-      setError("Não há membros suspensos na semana selecionada para exportar.");
+      setError("N\u00e3o h\u00e1 membros suspensos na semana selecionada para exportar.");
       return;
     }
 
@@ -231,7 +231,7 @@ export default function Punishments() {
 
             <div class="facts">
               <div class="fact">
-                <span class="fact-label">Conteúdos</span>
+                <span class="fact-label">Conte?dos</span>
                 <span class="fact-value">${escapeHtml(punishedEvents)}</span>
               </div>
               <div class="fact">
@@ -239,7 +239,7 @@ export default function Punishments() {
                 <span class="fact-value">${escapeHtml(formatDateTime(punishment.evaluatedAt))}</span>
               </div>
               <div class="fact">
-                <span class="fact-label">Próxima elegibilidade</span>
+                <span class="fact-label">Pr?xima elegibilidade</span>
                 <span class="fact-value">${escapeHtml(
                   punishment.nextEligiblePenaltyAt
                     ? formatDateTime(punishment.nextEligiblePenaltyAt)
@@ -445,10 +445,10 @@ export default function Punishments() {
             <div className="clandestino-page-header">
               <div className="clandestino-page-header__eyebrow">Disciplina semanal</div>
               <CardTitle className="clandestino-page-header__title text-white">
-                Punições e carência
+                Puni\u00e7\u00f5es e car\u00eancia
               </CardTitle>
               <CardDescription className="clandestino-page-header__description text-slate-300">
-                Aqui a liderança vê quem ficou de castigo, quem está em carência de 15 dias e qual conteúdo causou a punição. A avaliação usa a semana de domingo a sábado e respeita a regra de não punir de novo na semana seguinte.
+                Aqui a lideran\u00e7a v\u00ea quem ficou de castigo, quem est\u00e1 em car\u00eancia de 15 dias e qual conte\u00fado causou a puni\u00e7\u00e3o. A avalia\u00e7\u00e3o usa a semana de domingo a s\u00e1bado e respeita a regra de n\u00e3o punir de novo na semana seguinte.
               </CardDescription>
             </div>
           </CardHeader>
@@ -467,11 +467,11 @@ export default function Punishments() {
                 <p className="text-lg font-semibold text-white">{summary.cooldown}</p>
               </div>
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-                <p className="text-xs text-emerald-200">Sem punição</p>
+                <p className="text-xs text-emerald-200">Sem puni\u00e7\u00e3o</p>
                 <p className="text-lg font-semibold text-white">{summary.clear}</p>
               </div>
               <div className="rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 p-4">
-                <p className="text-xs text-fuchsia-200">Marcados p/ remoção</p>
+                <p className="text-xs text-fuchsia-200">Marcados p/ remo\u00e7\u00e3o</p>
                 <p className="text-lg font-semibold text-white">{summary.markedForRemoval}</p>
               </div>
             </div>
@@ -485,7 +485,7 @@ export default function Punishments() {
                   </SelectTrigger>
                   <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
                     {availableWeekKeys.length === 0 ? (
-                      <SelectItem value="">Nenhuma avaliação disponível</SelectItem>
+                      <SelectItem value="">Nenhuma avalia\u00e7\u00e3o dispon\u00edvel</SelectItem>
                     ) : (
                       availableWeekKeys.map((weekKey) => (
                         <SelectItem key={weekKey} value={weekKey}>
@@ -498,17 +498,17 @@ export default function Punishments() {
               </div>
 
               <div className="rounded-xl border border-slate-700/60 bg-slate-950/20 p-4 text-sm text-slate-300">
-                Todo domingo às 05:00 de Brasília o backend avalia a participação da semana fechada.
-                A partir de segunda às 12:00 de Brasília ele também avalia setup de defesa,
+                Todo domingo \u00e0s 05:00 de Bras\u00edlia o backend avalia a participa\u00e7\u00e3o da semana fechada.
+                A partir de segunda \u00e0s 12:00 de Bras\u00edlia ele tamb\u00e9m avalia setup de defesa,
                 exigindo 5 defesas de GW e ao menos 3 de Siege. Se a pessoa entrou em castigo,
-                a próxima punição só volta a ser elegível 15 dias depois.
+                a pr\u00f3xima puni\u00e7\u00e3o s\u00f3 volta a ser eleg\u00edvel 15 dias depois.
               </div>
             </div>
 
             {error && (
               <Alert variant="destructive" className="border-red-500/30 bg-red-500/10">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Falha ao carregar</AlertTitle>
+                <AlertTitle>Avalia\u00e7\u00e3o conclu\u00edda</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -525,7 +525,7 @@ export default function Punishments() {
               {visiblePunishments.length === 0 ? (
                 <Card className="border border-slate-700/60 bg-slate-900/50">
                   <CardContent className="pt-6 text-center text-slate-400">
-                    Nenhuma punição semanal foi registrada ainda. Rode a avaliação manual ou aguarde as janelas automáticas de domingo às 05:00 e segunda às 12:00.
+                    Nenhuma puni\u00e7\u00e3o semanal foi registrada ainda. Rode a avalia\u00e7\u00e3o manual ou aguarde as janelas autom\u00e1ticas de domingo \u00e0s 05:00 e segunda \u00e0s 12:00.
                   </CardContent>
                 </Card>
               ) : (
@@ -552,8 +552,7 @@ export default function Punishments() {
                             />
                             {punishment.markedForRemoval ? (
                               <Badge className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-100">
-                                Marcado para remoção
-                              </Badge>
+                                Marcado para remo\u00e7\u00e3o</Badge>
                             ) : null}
                           </div>
                           <p className="text-sm text-slate-400">
