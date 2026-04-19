@@ -48,6 +48,7 @@ export interface DefenseUnitEquipmentDto {
   unitId?: number;
   unitMasterId?: number;
   position?: number;
+  unitLevel?: number;
   monsterName: string;
   equippedRunesCount?: number;
   expectedRunesCount?: number;
@@ -73,6 +74,7 @@ export interface DefenseComplianceIssueDto {
     | "sameElementTeam"
     | "allBelowFiveStarsTeam"
     | "allNaturalFourTeam"
+    | "belowLevelForty"
     | "missingRunes"
     | "missingArtifacts";
   summary: string;
@@ -99,6 +101,7 @@ export interface DefenseDeckSummaryDto {
   assignedBase?: number;
   round?: number;
   ratingId?: number;
+  unitIds?: number[];
   team: TeamCompositionDto;
   wins?: number;
   losses?: number;

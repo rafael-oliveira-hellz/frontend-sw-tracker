@@ -114,17 +114,16 @@ export default function GuildDefenseEquipmentAuditPanel({
           <ShieldOff className="h-4 w-4" />
           <AlertTitle>Limite atual do export</AlertTitle>
           <AlertDescription>
-            A auditoria agora re?ne composi??o repetida de elemento, trio abaixo de 5 estrelas na GW
-            e falta de runa/artefato. Siege traz resumo de equipamento por unidade; GvG ainda n?o
-            exp?e resumo suficiente para auditar equipamento com o mesmo n?vel de detalhe, ent?o essa
-            parte continua limitada pelo export.
+            Siege traz contagem total de runas e artefatos por unidade, exibida como `x/6 runas` e
+            `y/2 artefatos`. Em GvG, o export continua limitado, mas o sistema reaproveita o alerta
+            quando o mesmo monstro tambem aparece incompleto em uma defesa de Siege do membro.
           </AlertDescription>
         </Alert>
 
         {equipmentOverview.guildWarUnknown > 0 && (
           <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-4 text-sm text-slate-300">
-            {equipmentOverview.guildWarUnknown} defesa(s) de GvG estao no snapshot, mas sem resumo de equipamento
-            no export atual.
+            {equipmentOverview.guildWarUnknown} defesa(s) de GvG estao no snapshot sem resumo direto de
+            equipamento no export atual.
           </div>
         )}
 
