@@ -1,6 +1,7 @@
 ﻿import { createBrowserRouter } from "react-router";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import Punishments from "./pages/Punishments";
 
 export const router = createBrowserRouter([
   {
@@ -100,10 +101,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "admin/punishments",
-        lazy: async () => {
-          const module = await import("./pages/Punishments");
-          return { Component: module.default };
-        },
+        Component: Punishments,
       },
     ],
   },
