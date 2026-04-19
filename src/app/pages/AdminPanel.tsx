@@ -173,7 +173,7 @@ export default function AdminPanel() {
             <div className="mt-2 flex items-center gap-2">
               <Users className="h-4 w-4 text-yellow-400 sm:h-5 sm:w-5" />
               <span className="text-sm font-semibold text-white sm:text-base">
-                {summary.totalParticipants} membros rastreados
+                {summary.totalParticipants} membros ativos
               </span>
             </div>
           </div>

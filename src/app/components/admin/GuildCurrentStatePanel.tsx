@@ -353,7 +353,7 @@ export function GuildCurrentStatePanel() {
             <p className="text-sm font-semibold text-white">{formatDateTime(currentState?.updatedAt)}</p>
           </div>
           <div className="rounded-xl border border-slate-700/60 bg-slate-800/40 p-4">
-            <p className="text-xs text-slate-400">Membros</p>
+            <p className="text-xs text-slate-400">Membros ativos</p>
             <p className="text-sm font-semibold text-white">{summary.members}</p>
           </div>
           <div className="rounded-xl border border-slate-700/60 bg-slate-800/40 p-4">

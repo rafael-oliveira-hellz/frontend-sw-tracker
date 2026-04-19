@@ -255,6 +255,7 @@ export interface GuildImportPayloadPreviewDto {
       notes: string;
     };
   };
+  activeRosterWizardIds?: number[];
   members: GuildImportPreviewMemberDto[];
   attacks: Array<unknown>;
   defenses: Array<unknown>;
@@ -360,6 +361,7 @@ export interface GuildCurrentStateDto {
   importRunId: string;
   snapshotId: string;
   updatedAt: string;
+  activeRosterWizardIds?: number[];
   siegeMatches: SiegeMatchSummaryDto[];
   members: GuildCurrentMemberStateDto[];
 }
