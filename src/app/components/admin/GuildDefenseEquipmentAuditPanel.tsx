@@ -1,13 +1,10 @@
-import { AlertTriangle, Shield, ShieldOff, Swords } from "lucide-react";
+import { AlertTriangle, Download, Shield, ShieldOff, Swords } from "lucide-react";
 import { useMemo } from "react";
 
-import type {
-  DefenseComplianceIssueDto,
-  DefenseDeckSummaryDto,
-  GuildCurrentStateDto,
-} from "../../lib/guildImport";
+import type { DefenseDeckSummaryDto, GuildCurrentStateDto } from "../../lib/guildImport";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
 const formatContextLabel = (context: DefenseDeckSummaryDto["context"]) =>
@@ -21,7 +18,49 @@ const formatDefenseLocation = (defense: DefenseDeckSummaryDto) => {
   return `Base ${defense.assignedBase ?? "-"}`;
 };
 
-const buildIssueLabel = (issue: DefenseComplianceIssueDto) => issue.summary;
+const exportEquipmentAlerts = (
+  rows: Array<{
+    memberName: string;
+    role?: string;
+    summary: string;
+    contexts: string[];
+    locations: string[];
+    warningDeadlineAt?: string;
+  }>,
+) => {
+  const header = [
+    "Membro",
+    "Cargo",
+    "Problema",
+    "Contextos",
+    "Defesas afetadas",
+    "Prazo para correcao",
+  ];
+  const body = rows.map((row) => [
+    row.memberName,
+    row.role ?? "",
+    row.summary,
+    row.contexts.join(" | "),
+    row.locations.join(" | "),
+    row.warningDeadlineAt
+      ? new Date(row.warningDeadlineAt).toLocaleString("pt-BR", {
+          timeZone: "America/Sao_Paulo",
+        })
+      : "",
+  ]);
+  const csv = [header, ...body]
+    .map((line) => line.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `defesas-problematicas-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
 
 export default function GuildDefenseEquipmentAuditPanel({
   currentState,
@@ -39,34 +78,86 @@ export default function GuildDefenseEquipmentAuditPanel({
           wizardId: number;
           memberName: string;
           role?: string;
-          context: DefenseDeckSummaryDto["context"];
-          location: string;
           summary: string;
+          contexts: string[];
+          locations: string[];
           warningDeadlineAt?: string;
-          issues: DefenseComplianceIssueDto[];
         }>,
       };
     }
 
-    const rows = currentState.members.flatMap((member) =>
+    const warningDefenses = currentState.members.flatMap((member) =>
       [...member.guildWar.defenses, ...member.siege.defenses]
         .filter((defense) => defense.complianceAudit?.status === "warning")
         .map((defense) => ({
           wizardId: member.wizardId,
           memberName: member.member.wizardName,
           role: member.member.guildRole,
-          context: defense.context,
-          location: formatDefenseLocation(defense),
-          summary: defense.complianceAudit?.summary ?? "",
+          contextLabel: formatContextLabel(defense.context),
+          location: `${formatContextLabel(defense.context)} ${formatDefenseLocation(defense)}`,
           warningDeadlineAt: defense.complianceAudit?.warningDeadlineAt,
           issues: defense.complianceAudit?.issues ?? [],
         })),
     );
 
+    const groupedIssues = new Map<
+      string,
+      {
+        wizardId: number;
+        memberName: string;
+        role?: string;
+        summary: string;
+        contexts: Set<string>;
+        locations: Set<string>;
+        warningDeadlineAt?: string;
+      }
+    >();
+
+    for (const defense of warningDefenses) {
+      for (const issue of defense.issues) {
+        const key = `${defense.wizardId}::${issue.code}::${issue.summary}`;
+        const existing = groupedIssues.get(key);
+
+        if (existing) {
+          existing.contexts.add(defense.contextLabel);
+          existing.locations.add(defense.location);
+          if (
+            defense.warningDeadlineAt &&
+            (!existing.warningDeadlineAt ||
+              new Date(defense.warningDeadlineAt).getTime() >
+                new Date(existing.warningDeadlineAt).getTime())
+          ) {
+            existing.warningDeadlineAt = defense.warningDeadlineAt;
+          }
+          continue;
+        }
+
+        groupedIssues.set(key, {
+          wizardId: defense.wizardId,
+          memberName: defense.memberName,
+          role: defense.role,
+          summary: issue.summary,
+          contexts: new Set([defense.contextLabel]),
+          locations: new Set([defense.location]),
+          warningDeadlineAt: defense.warningDeadlineAt,
+        });
+      }
+    }
+
+    const rows = [...groupedIssues.values()].map((row) => ({
+      wizardId: row.wizardId,
+      memberName: row.memberName,
+      role: row.role,
+      summary: row.summary,
+      contexts: [...row.contexts],
+      locations: [...row.locations],
+      warningDeadlineAt: row.warningDeadlineAt,
+    }));
+
     return {
       affectedMembers: new Set(rows.map((row) => row.wizardId)).size,
-      incompleteDefenses: rows.length,
-      flaggedIssues: rows.reduce((total, row) => total + row.issues.length, 0),
+      incompleteDefenses: warningDefenses.length,
+      flaggedIssues: rows.length,
       guildWarUnknown: currentState.members.reduce(
         (total, member) =>
           total +
@@ -89,9 +180,22 @@ export default function GuildDefenseEquipmentAuditPanel({
               Lista administrativa das defesas com equipamento incompleto detectado no snapshot atual.
             </CardDescription>
           </div>
-          <Badge className="border-amber-500/30 bg-amber-500/10 text-amber-100">
-            {equipmentOverview.incompleteDefenses} defesa(s) com alerta
-          </Badge>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Badge className="border-amber-500/30 bg-amber-500/10 text-amber-100">
+              {equipmentOverview.incompleteDefenses} defesa(s) com alerta
+            </Badge>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="border-slate-700 bg-slate-950/40 text-slate-100 hover:bg-slate-800"
+              onClick={() => exportEquipmentAlerts(equipmentOverview.rows)}
+              disabled={equipmentOverview.rows.length === 0}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Exportar alertas
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -120,12 +224,12 @@ export default function GuildDefenseEquipmentAuditPanel({
           </AlertDescription>
         </Alert>
 
-        {equipmentOverview.guildWarUnknown > 0 && (
+        {equipmentOverview.guildWarUnknown > 0 ? (
           <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-4 text-sm text-slate-300">
             {equipmentOverview.guildWarUnknown} defesa(s) de GvG estao no snapshot sem resumo direto de
             equipamento no export atual.
           </div>
-        )}
+        ) : null}
 
         {equipmentOverview.rows.length === 0 ? (
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5 text-sm text-emerald-100">
@@ -135,7 +239,7 @@ export default function GuildDefenseEquipmentAuditPanel({
           <div className="space-y-3">
             {equipmentOverview.rows.map((row) => (
               <div
-                key={`${row.wizardId}-${row.context}-${row.location}`}
+                key={`${row.wizardId}-${row.summary}`}
                 className="rounded-xl border border-slate-800 bg-slate-950/40 p-4"
               >
                 <div className="flex flex-wrap items-center gap-2">
@@ -147,34 +251,31 @@ export default function GuildDefenseEquipmentAuditPanel({
                     <AlertTriangle className="mr-1 h-3.5 w-3.5" />
                     incompleto
                   </Badge>
-                  <Badge className="border-slate-700 bg-slate-800/80 text-slate-200">
-                    {row.context === "guildWar" ? (
-                      <Shield className="mr-1 h-3.5 w-3.5" />
-                    ) : (
-                      <Swords className="mr-1 h-3.5 w-3.5" />
-                    )}
-                    {formatContextLabel(row.context)}
-                  </Badge>
-                  <Badge className="border-slate-700 bg-slate-800/80 text-slate-200">{row.location}</Badge>
+                  {row.contexts.map((context) => (
+                    <Badge
+                      key={`${row.wizardId}-${row.summary}-${context}`}
+                      className="border-slate-700 bg-slate-800/80 text-slate-200"
+                    >
+                      {context === "GvG" ? (
+                        <Shield className="mr-1 h-3.5 w-3.5" />
+                      ) : (
+                        <Swords className="mr-1 h-3.5 w-3.5" />
+                      )}
+                      {context}
+                    </Badge>
+                  ))}
                 </div>
 
                 <p className="mt-3 text-sm text-slate-300">{row.summary}</p>
+                <p className="mt-2 text-xs text-slate-400">Aparece em: {row.locations.join(" • ")}</p>
                 {row.warningDeadlineAt ? (
                   <p className="mt-2 text-xs text-amber-200">
-                    Prazo para correção: {new Date(row.warningDeadlineAt).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}
+                    Prazo para correção:{" "}
+                    {new Date(row.warningDeadlineAt).toLocaleString("pt-BR", {
+                      timeZone: "America/Sao_Paulo",
+                    })}
                   </p>
                 ) : null}
-
-                <div className="mt-3 space-y-2">
-                  {row.issues.map((issue) => (
-                    <div
-                      key={`${row.wizardId}-${row.context}-${row.location}-${issue.code}-${issue.summary}`}
-                      className="rounded-lg border border-red-500/15 bg-red-500/5 px-3 py-2 text-sm text-red-50"
-                    >
-                      {buildIssueLabel(issue)}
-                    </div>
-                  ))}
-                </div>
               </div>
             ))}
           </div>
