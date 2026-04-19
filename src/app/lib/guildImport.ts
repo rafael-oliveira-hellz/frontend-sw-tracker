@@ -364,6 +364,29 @@ export interface GuildCurrentStateDto {
   members: GuildCurrentMemberStateDto[];
 }
 
+export interface LabyrinthParticipationEntryDto {
+  wizardId: number;
+  memberName: string;
+  validAttacks: number;
+  updatedAt: string;
+  updatedBy?: string;
+}
+
+export interface LabyrinthCycleDto {
+  guildId?: number;
+  guildName?: string;
+  cycleStartDate: string;
+  expectedDurationDays: number;
+  requiredAttacksByDay: number[];
+  actualDurationDays?: number;
+  isConcluded: boolean;
+  concludedAt?: string;
+  concludedBy?: string;
+  updatedAt: string;
+  updatedBy?: string;
+  entries: LabyrinthParticipationEntryDto[];
+}
+
 export type WeeklyPunishmentEventKey =
   | "guildWar"
   | "siege"
@@ -449,6 +472,13 @@ export interface WeeklyPunishmentsResponseDto {
   message?: string;
 }
 
+export interface LabyrinthCycleResponseDto {
+  success: boolean;
+  cycle?: LabyrinthCycleDto;
+  error?: string;
+  message?: string;
+}
+
 export type BatchUploadProgress = {
   batchIndex: number;
   totalBatches: number;
@@ -474,6 +504,7 @@ export const DEFAULT_GUILD_IMPORT_HISTORY_ENDPOINT = `${API_BASE_URL}/api/guild/
 export const DEFAULT_GUILD_CURRENT_STATE_ENDPOINT = `${API_BASE_URL}/api/guild/current-state`;
 export const DEFAULT_GUILD_PUNISHMENTS_ENDPOINT = `${API_BASE_URL}/api/guild/punishments`;
 export const DEFAULT_GUILD_RUN_WEEKLY_PUNISHMENTS_ENDPOINT = `${API_BASE_URL}/api/guild/punishments/run-weekly-evaluation`;
+export const DEFAULT_GUILD_LABYRINTH_CYCLE_ENDPOINT = `${API_BASE_URL}/api/guild/labyrinth-cycle/current`;
 export const DEFAULT_GUILD_IMPORT_BATCH_BYTES = Math.max(1, DEFAULT_IMPORT_BATCH_MB) * 1024 * 1024;
 
 export const GUILD_IMPORT_COMPLETED_EVENT = "guild-import:completed";
@@ -773,4 +804,81 @@ export async function runGuildWeeklyPunishmentEvaluation(
   }
 
   return payload.run;
+}
+
+export async function fetchCurrentLabyrinthCycle(
+  accessToken: string,
+  endpoint = DEFAULT_GUILD_LABYRINTH_CYCLE_ENDPOINT,
+): Promise<LabyrinthCycleDto> {
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const payload = (await response.json()) as LabyrinthCycleResponseDto;
+
+  if (!response.ok || !payload.cycle) {
+    throw new Error(payload.message ?? "Falha ao carregar o ciclo manual do labirinto.");
+  }
+
+  return payload.cycle;
+}
+
+type UpsertLabyrinthCycleRequest = {
+  actualDurationDays?: number;
+  requiredAttacksByDay?: number[];
+  entries: Array<{
+    wizardId: number;
+    memberName?: string;
+    validAttacks: number;
+  }>;
+};
+
+export async function saveCurrentLabyrinthCycle(
+  accessToken: string,
+  request: UpsertLabyrinthCycleRequest,
+  endpoint = DEFAULT_GUILD_LABYRINTH_CYCLE_ENDPOINT,
+): Promise<LabyrinthCycleDto> {
+  const response = await fetch(endpoint, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(request),
+  });
+
+  const payload = (await response.json()) as LabyrinthCycleResponseDto;
+
+  if (!response.ok || !payload.cycle) {
+    throw new Error(payload.message ?? "Falha ao salvar o ciclo manual do labirinto.");
+  }
+
+  return payload.cycle;
+}
+
+export async function concludeCurrentLabyrinthCycle(
+  accessToken: string,
+  request: UpsertLabyrinthCycleRequest,
+  endpoint = DEFAULT_GUILD_LABYRINTH_CYCLE_ENDPOINT,
+): Promise<LabyrinthCycleDto> {
+  const response = await fetch(`${endpoint}/conclude`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(request),
+  });
+
+  const payload = (await response.json()) as LabyrinthCycleResponseDto;
+
+  if (!response.ok || !payload.cycle) {
+    throw new Error(payload.message ?? "Falha ao concluir o ciclo manual do labirinto.");
+  }
+
+  return payload.cycle;
 }
