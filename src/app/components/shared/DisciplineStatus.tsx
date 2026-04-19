@@ -6,6 +6,7 @@ import { Badge } from "../ui/badge";
 import { cn } from "../ui/utils";
 
 export type DisciplineState = "punished" | "cooldown" | "clear";
+type DisciplineMode = "current" | "record";
 
 type DisciplineLabels = {
   punished: string;
@@ -15,8 +16,16 @@ type DisciplineLabels = {
 
 const defaultLabels: DisciplineLabels = {
   punished: "Suspenso",
-  cooldown: "Suspenso",
+  cooldown: "Em suspensão",
   clear: "Liberado",
+};
+
+const isSuspensionActiveNow = (punishment?: GuildWeeklyPunishmentDto | null) => {
+  if (!punishment?.nextEligiblePenaltyAt) {
+    return false;
+  }
+
+  return new Date(punishment.nextEligiblePenaltyAt).getTime() > Date.now();
 };
 
 const normalizeDisciplineText = (value?: string) =>
@@ -51,28 +60,32 @@ const indicatesWeeklySuspension = (
 export function resolveDisciplineState(
   punishment?: GuildWeeklyPunishmentDto | null,
   eventKey?: WeeklyPunishmentEventKey,
+  mode: DisciplineMode = "current",
 ): DisciplineState {
   if (!punishment) {
     return "clear";
   }
 
+  const suspensionActive = mode === "record" ? true : isSuspensionActiveNow(punishment);
+
   if (eventKey) {
     const event = punishment.events.find((entry) => entry.eventKey === eventKey);
-    if (event?.punishmentApplied) {
+    if (event?.punishmentApplied && suspensionActive) {
       return "punished";
     }
 
     if (
-      (event && !event.required && indicatesWeeklySuspension(eventKey, event.reason)) ||
-      indicatesWeeklySuspension(eventKey, punishment.reasonSummary)
+      suspensionActive &&
+      ((event && !event.required && indicatesWeeklySuspension(eventKey, event.reason)) ||
+        indicatesWeeklySuspension(eventKey, punishment.reasonSummary))
     ) {
       return "punished";
     }
-  } else if (punishment.punishmentApplied) {
+  } else if (punishment.punishmentApplied && suspensionActive) {
     return "punished";
   }
 
-  if (punishment.cooldownActive) {
+  if (punishment.cooldownActive && suspensionActive) {
     return "cooldown";
   }
 
@@ -84,9 +97,10 @@ export function resolveDisciplineCopy(
   options?: {
     eventKey?: WeeklyPunishmentEventKey;
     labels?: Partial<DisciplineLabels>;
+    mode?: DisciplineMode;
   },
 ) {
-  const state = resolveDisciplineState(punishment, options?.eventKey);
+  const state = resolveDisciplineState(punishment, options?.eventKey, options?.mode);
   const labels = {
     ...defaultLabels,
     ...options?.labels,
@@ -111,6 +125,7 @@ export function DisciplineStatus({
   punishment,
   eventKey,
   labels,
+  mode,
   showReason = false,
   hideWhenClear = false,
   className,
@@ -119,12 +134,13 @@ export function DisciplineStatus({
   punishment?: GuildWeeklyPunishmentDto | null;
   eventKey?: WeeklyPunishmentEventKey;
   labels?: Partial<DisciplineLabels>;
+  mode?: DisciplineMode;
   showReason?: boolean;
   hideWhenClear?: boolean;
   className?: string;
   reasonClassName?: string;
 }) {
-  const status = resolveDisciplineCopy(punishment, { eventKey, labels });
+  const status = resolveDisciplineCopy(punishment, { eventKey, labels, mode });
 
   if (hideWhenClear && status.state === "clear") {
     return null;

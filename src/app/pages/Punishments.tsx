@@ -449,9 +449,9 @@ export default function Punishments() {
                 Punições e carência
               </CardTitle>
               <CardDescription className="clandestino-page-header__description text-slate-300">
-                Aqui a liderança vê quem ficou de castigo, quem está em cooldown de 7 dias e qual
-                conteúdo causou a punição. A avaliação usa a semana de domingo a sábado e respeita a
-                regra de não punir de novo durante esse período.
+                Aqui a liderança vê quem ficou de castigo na semana, quem ainda aparece no registro
+                histórico de suspensão e qual conteúdo causou a punição. A avaliação usa a semana de
+                domingo a sábado.
               </CardDescription>
             </div>
           </CardHeader>
@@ -501,10 +501,9 @@ export default function Punishments() {
               </div>
 
               <div className="rounded-xl border border-slate-700/60 bg-slate-950/20 p-4 text-sm text-slate-300">
-                Todo domingo às 05:00 de Brasília o backend avalia a participação da semana fechada.
+                Todo domingo às 22:00 de Brasília o backend avalia a participação da semana fechada.
                 A partir de segunda às 12:00 de Brasília ele também avalia setup de defesa, exigindo 5
-                defesas de GW e ao menos 3 de Siege. Se a pessoa entrou em castigo, a próxima punição
-                só volta a ser elegível 7 dias depois.
+                defesas de GW e ao menos 3 de Siege. A suspensão semanal vale até sábado às 23:59.
               </div>
             </div>
 
@@ -529,7 +528,7 @@ export default function Punishments() {
                 <Card className="border border-slate-700/60 bg-slate-900/50">
                   <CardContent className="pt-6 text-center text-slate-400">
                     Nenhuma punição semanal foi registrada ainda. Rode a avaliação manual ou aguarde
-                    as janelas automáticas de domingo às 05:00 e segunda às 12:00.
+                    as janelas automáticas de domingo às 22:00 e segunda às 12:00.
                   </CardContent>
                 </Card>
               ) : (
@@ -548,6 +547,7 @@ export default function Punishments() {
                             </Badge>
                             <DisciplineStatus
                               punishment={punishment}
+                              mode="record"
                               labels={{
                                 punished: "Suspenso",
                                 cooldown: "Suspenso",

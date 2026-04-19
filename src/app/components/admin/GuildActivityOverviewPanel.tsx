@@ -12,7 +12,7 @@ import { useGuildWeek } from "../../context/GuildWeekContext";
 import { formatTeamLabel } from "../../lib/monsterCatalog";
 import type { GuildCurrentStateDto, GuildWeeklyPunishmentDto } from "../../lib/guildImport";
 import { useWeeklyPunishments } from "../../lib/useWeeklyPunishments";
-import { DisciplineStatus } from "../shared/DisciplineStatus";
+import { DisciplineStatus, resolveDisciplineCopy } from "../shared/DisciplineStatus";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
@@ -183,6 +183,8 @@ function WeeklyRow({
   row: WeeklyMemberActivityRow;
   punishment?: GuildWeeklyPunishmentDto;
 }) {
+  const currentDiscipline = resolveDisciplineCopy(punishment);
+
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -197,9 +199,9 @@ function WeeklyRow({
           <p className="text-xs text-slate-500">
             {row.completedEvents}/{row.totalEvents} frentes concluídas • atualizado em {new Date(row.updatedAt).toLocaleString()}
           </p>
-          {punishment?.reasonSummary ? (
-            <p className="mt-1 text-xs text-slate-400">{punishment.reasonSummary}</p>
-          ) : null}
+            {currentDiscipline.state !== "clear" && currentDiscipline.reasonSummary ? (
+              <p className="mt-1 text-xs text-slate-400">{currentDiscipline.reasonSummary}</p>
+            ) : null}
         </div>
         <div className="rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-300">
           {row.totalTrackedAttacks} ações rastreadas na semana
