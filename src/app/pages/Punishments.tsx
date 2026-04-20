@@ -52,16 +52,17 @@ const formatDateTime = (value?: string) =>
       })
     : "Não informado";
 
+const formatStoredWeekDate = (value?: string) => {
+  if (!value) {
+    return "--/--";
+  }
+
+  const [year, month, day] = value.slice(0, 10).split("-");
+  return `${day}/${month}`;
+};
+
 const formatWeekLabel = (punishment: GuildWeeklyPunishmentDto) =>
-  `${new Date(punishment.weekStart).toLocaleDateString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    day: "2-digit",
-    month: "2-digit",
-  })} a ${new Date(punishment.weekEnd).toLocaleDateString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    day: "2-digit",
-    month: "2-digit",
-  })}`;
+  `${formatStoredWeekDate(punishment.weekStart)} a ${formatStoredWeekDate(punishment.weekEnd)}`;
 
 const escapeHtml = (value: string) =>
   value
