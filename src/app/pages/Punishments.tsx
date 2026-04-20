@@ -414,8 +414,8 @@ export default function Punishments() {
         <Card className="border-2 border-red-500/30 bg-slate-900/60 backdrop-blur-sm">
           <CardHeader>
             <div className="clandestino-page-header">
-              <div className="clandestino-page-header__eyebrow">Disciplina semanal</div>
-              <CardTitle className="clandestino-page-header__title text-white">Punições e carência</CardTitle>
+              <div className="clandestino-page-header__eyebrow">Registro histórico semanal</div>
+              <CardTitle className="clandestino-page-header__title text-white">Punições da Semana</CardTitle>
               <CardDescription className="clandestino-page-header__description text-slate-300">
                 Esta página mostra o registro histórico da semana avaliada. Aqui a liderança vê quem foi
                 punido naquela semana, quem estava em carência naquela mesma semana e quais conteúdos
