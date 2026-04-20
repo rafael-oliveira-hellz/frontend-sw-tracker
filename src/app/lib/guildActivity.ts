@@ -299,10 +299,10 @@ const hasLabyrinthParticipation = (member: GuildCurrentMemberStateDto) =>
       member.labyrinth.isMvp,
   );
 
-const SUBJUGATION_BOSS_MIN_SCORE = 3_000_000;
+const SUBJUGATION_FULL_CLEAR_MIN_SCORE = 4_200_000;
 
 const hasSubjugationParticipation = (member: GuildCurrentMemberStateDto) =>
-  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_BOSS_MIN_SCORE;
+  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_FULL_CLEAR_MIN_SCORE;
 
 const buildWindowProgress = (
   key: string,
@@ -611,12 +611,12 @@ const buildSubjugationProgress = (member: GuildCurrentMemberStateDto): WeeklyEve
     label: participated
       ? `Score ${score} • Rank ${member.subjugation.rank ?? "-"}`
       : score > 0
-        ? `Boss não validado (${score.toLocaleString("pt-BR")} / ${SUBJUGATION_BOSS_MIN_SCORE.toLocaleString("pt-BR")})`
+        ? "Subjugação incompleta"
         : "Sem participação registrada",
     hint: participated
-      ? "Boss validado no ciclo atual da subjugação"
+      ? "Subjugação concluída no ciclo atual"
       : score > 0
-        ? "Houve pontuação, mas não atingiu o mínimo para confirmar ataque no boss"
+        ? "A pontuação indica que o membro não completou toda a subjugação"
         : "Participação no ciclo atual da subjugação",
     winRate: 0,
     teamsUsed: [],

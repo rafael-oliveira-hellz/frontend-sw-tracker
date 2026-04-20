@@ -49,10 +49,10 @@ const hasLabyrinthParticipation = (member: { labyrinth: { score?: number; contri
       member.labyrinth.isMvp,
   );
 
-const SUBJUGATION_BOSS_MIN_SCORE = 3_000_000;
+const SUBJUGATION_FULL_CLEAR_MIN_SCORE = 4_200_000;
 
 const hasSubjugationParticipation = (member: { subjugation: { clearScore?: number; contributeRatio?: number } }) =>
-  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_BOSS_MIN_SCORE;
+  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_FULL_CLEAR_MIN_SCORE;
 
 function AdminPanelSkeleton({ title, description }: { title: string; description: string }) {
   return (

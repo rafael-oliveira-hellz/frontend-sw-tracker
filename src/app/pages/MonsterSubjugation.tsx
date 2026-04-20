@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { useData } from "../context/DataContext";
 import { useGuildCurrentState } from "../lib/useGuildCurrentState";
 
-const SUBJUGATION_BOSS_MIN_SCORE = 3_000_000;
+const SUBJUGATION_FULL_CLEAR_MIN_SCORE = 4_200_000;
 
 const getElementColor = (element: string) => {
   switch (element) {
@@ -48,7 +48,7 @@ export default function MonsterSubjugation() {
   if (!userData) return null;
 
   const score = currentMember?.subjugation.clearScore ?? 0;
-  const hasSubjugationData = score >= SUBJUGATION_BOSS_MIN_SCORE;
+  const hasSubjugationData = score >= SUBJUGATION_FULL_CLEAR_MIN_SCORE;
   const fronts = [
     { label: "Fogo", completed: hasSubjugationData },
     { label: "Água", completed: hasSubjugationData },
@@ -119,13 +119,9 @@ export default function MonsterSubjugation() {
                 <span className="text-sm text-slate-300">Estado atual do ciclo</span>
                 <span className="font-bold text-white">{completedFronts} / 4 frentes</span>
               </div>
-              <p className="mb-3 text-sm text-slate-300">
-                O boss só é considerado validado a partir de{" "}
-                {SUBJUGATION_BOSS_MIN_SCORE.toLocaleString("pt-BR")} pontos.
-              </p>
               {score > 0 && !hasSubjugationData ? (
                 <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
-                  Boss não validado: {score.toLocaleString("pt-BR")} / {SUBJUGATION_BOSS_MIN_SCORE.toLocaleString("pt-BR")}
+                  Subjugação incompleta.
                 </div>
               ) : null}
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
