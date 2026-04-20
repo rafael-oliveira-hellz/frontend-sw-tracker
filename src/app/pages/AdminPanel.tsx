@@ -49,11 +49,10 @@ const hasLabyrinthParticipation = (member: { labyrinth: { score?: number; contri
       member.labyrinth.isMvp,
   );
 
+const SUBJUGATION_BOSS_MIN_SCORE = 3_000_000;
+
 const hasSubjugationParticipation = (member: { subjugation: { clearScore?: number; contributeRatio?: number } }) =>
-  Boolean(
-    (member.subjugation.clearScore ?? 0) > 0 ||
-      (member.subjugation.contributeRatio ?? 0) > 0,
-  );
+  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_BOSS_MIN_SCORE;
 
 function AdminPanelSkeleton({ title, description }: { title: string; description: string }) {
   return (

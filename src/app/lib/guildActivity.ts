@@ -299,11 +299,10 @@ const hasLabyrinthParticipation = (member: GuildCurrentMemberStateDto) =>
       member.labyrinth.isMvp,
   );
 
+const SUBJUGATION_BOSS_MIN_SCORE = 3_000_000;
+
 const hasSubjugationParticipation = (member: GuildCurrentMemberStateDto) =>
-  Boolean(
-    (member.subjugation.clearScore ?? 0) > 0 ||
-      (member.subjugation.contributeRatio ?? 0) > 0,
-  );
+  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_BOSS_MIN_SCORE;
 
 const buildWindowProgress = (
   key: string,
@@ -598,6 +597,7 @@ const buildLabyrinthProgress = (member: GuildCurrentMemberStateDto): WeeklyEvent
 const buildSubjugationProgress = (member: GuildCurrentMemberStateDto): WeeklyEventMemberProgress => {
   const participated = hasSubjugationParticipation(member);
   const completed = participated ? 1 : 0;
+  const score = member.subjugation.clearScore ?? 0;
 
   return {
     hasData:
@@ -609,9 +609,15 @@ const buildSubjugationProgress = (member: GuildCurrentMemberStateDto): WeeklyEve
     expected: 1,
     completionRate: completed * 100,
     label: participated
-      ? `Score ${member.subjugation.clearScore ?? 0} • Rank ${member.subjugation.rank ?? "-"}`
-      : "Sem participação registrada",
-    hint: "Participação no ciclo atual da subjugação",
+      ? `Score ${score} • Rank ${member.subjugation.rank ?? "-"}`
+      : score > 0
+        ? `Boss não validado (${score.toLocaleString("pt-BR")} / ${SUBJUGATION_BOSS_MIN_SCORE.toLocaleString("pt-BR")})`
+        : "Sem participação registrada",
+    hint: participated
+      ? "Boss validado no ciclo atual da subjugação"
+      : score > 0
+        ? "Houve pontuação, mas não atingiu o mínimo para confirmar ataque no boss"
+        : "Participação no ciclo atual da subjugação",
     winRate: 0,
     teamsUsed: [],
     attacksUsed: [],
