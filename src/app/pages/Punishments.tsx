@@ -43,30 +43,57 @@ const eventLabelMap: Record<string, string> = {
   subjugation: "Subjugação",
 };
 
+const mojibakePairs: Array<[string, string]> = [
+  ["ÃƒÆ’Ã‚Â§", "ç"],
+  ["ÃƒÆ’Ã‚Â£", "ã"],
+  ["ÃƒÆ’Ã‚Â¡", "á"],
+  ["ÃƒÆ’Ã‚Â©", "é"],
+  ["ÃƒÆ’Ã‚Âª", "ê"],
+  ["ÃƒÆ’Ã‚Â­", "í"],
+  ["ÃƒÆ’Ã‚Â³", "ó"],
+  ["ÃƒÆ’Ã‚Âµ", "õ"],
+  ["ÃƒÆ’Ã‚Âº", "ú"],
+  ["ÃƒÆ’Ã¢â‚¬Â¡", "Ç"],
+  ["ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢", "•"],
+  ["ÃƒÂ§", "ç"],
+  ["ÃƒÂ£", "ã"],
+  ["ÃƒÂ¡", "á"],
+  ["ÃƒÂ©", "é"],
+  ["ÃƒÂª", "ê"],
+  ["ÃƒÂ­", "í"],
+  ["ÃƒÂ³", "ó"],
+  ["ÃƒÂµ", "õ"],
+  ["ÃƒÂº", "ú"],
+  ["Ãƒâ€¡", "Ç"],
+  ["Ã¢â‚¬Â¢", "•"],
+  ["Ã§", "ç"],
+  ["Ã£", "ã"],
+  ["Ã¡", "á"],
+  ["Ã©", "é"],
+  ["Ãª", "ê"],
+  ["Ã­", "í"],
+  ["Ã³", "ó"],
+  ["Ãµ", "õ"],
+  ["Ãº", "ú"],
+  ["Ã‡", "Ç"],
+  ["NÃ£o", "Não"],
+  ["AvaliaÃ§Ã£o", "Avaliação"],
+  ["puniÃ§Ã£o", "punição"],
+  ["PuniÃ§Ãµes", "Punições"],
+  ["SubjugaÃ§Ã£o", "Subjugação"],
+  ["remoÃ§Ã£o", "remoção"],
+  ["carÃªncia", "carência"],
+  ["conteÃºdos", "conteúdos"],
+  ["PrÃ³xima", "Próxima"],
+  ["LÃ­der", "Líder"],
+  ["SÃªnior", "Sênior"],
+  ["lideranÃ§a", "liderança"],
+  ["Ã ", "à"],
+  ["â€¢", "•"],
+];
+
 const cleanMojibake = (value?: string) =>
-  (value ?? "")
-    .replaceAll("ÃƒÂ§", "ç")
-    .replaceAll("ÃƒÂ£", "ã")
-    .replaceAll("ÃƒÂ¡", "á")
-    .replaceAll("ÃƒÂ©", "é")
-    .replaceAll("ÃƒÂª", "ê")
-    .replaceAll("ÃƒÂ­", "í")
-    .replaceAll("ÃƒÂ³", "ó")
-    .replaceAll("ÃƒÂµ", "õ")
-    .replaceAll("ÃƒÂº", "ú")
-    .replaceAll("Ãƒâ€¡", "Ç")
-    .replaceAll("Ã¢â‚¬Â¢", "•")
-    .replaceAll("Ã§", "ç")
-    .replaceAll("Ã£", "ã")
-    .replaceAll("Ã¡", "á")
-    .replaceAll("Ã©", "é")
-    .replaceAll("Ãª", "ê")
-    .replaceAll("Ã­", "í")
-    .replaceAll("Ã³", "ó")
-    .replaceAll("Ãµ", "õ")
-    .replaceAll("Ãº", "ú")
-    .replaceAll("Ã‡", "Ç")
-    .replaceAll("â€¢", "•");
+  mojibakePairs.reduce((text, [broken, fixed]) => text.replaceAll(broken, fixed), value ?? "");
 
 const formatRole = (role?: string) => roleLabelMap[role ?? "member"] ?? "Membro";
 
@@ -82,7 +109,7 @@ const formatStoredWeekDate = (value?: string) => {
     return "--/--";
   }
 
-  const [year, month, day] = value.slice(0, 10).split("-");
+  const [, month, day] = value.slice(0, 10).split("-");
   return `${day}/${month}`;
 };
 
@@ -107,6 +134,74 @@ const sanitizeFileName = (value: string) =>
     .replace(/_+/g, "_")
     .replace(/^[-_.]+|[-_.]+$/g, "");
 
+const getBrazilWeekKeyForDate = (date = new Date()) => {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short",
+  }).formatToParts(date);
+  const year = Number(parts.find((part) => part.type === "year")?.value ?? "0");
+  const month = Number(parts.find((part) => part.type === "month")?.value ?? "0");
+  const day = Number(parts.find((part) => part.type === "day")?.value ?? "0");
+  const weekdayLabel = parts.find((part) => part.type === "weekday")?.value ?? "Sun";
+  const weekdayMap: Record<string, number> = {
+    Sun: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6,
+  };
+  const weekday = weekdayMap[weekdayLabel] ?? 0;
+  const utcDate = new Date(Date.UTC(year, month - 1, day));
+  utcDate.setUTCDate(utcDate.getUTCDate() - weekday);
+  return utcDate.toISOString().slice(0, 10);
+};
+
+const getRelevantEventKeys = (punishment: GuildWeeklyPunishmentDto) => {
+  if (punishment.punishedEventKeys.length > 0) {
+    return punishment.punishedEventKeys;
+  }
+
+  if (!punishment.markedForRemoval) {
+    return [];
+  }
+
+  return punishment.events
+    .filter((event) => event.required && event.completed < event.expected)
+    .map((event) => event.eventKey);
+};
+
+const formatEventList = (eventKeys: string[]) =>
+  eventKeys.length > 0
+    ? eventKeys.map((eventKey) => cleanMojibake(eventLabelMap[eventKey] ?? eventKey)).join(" • ")
+    : "nenhum";
+
+const buildPdfStyles = () => `
+  body { font-family: Arial, sans-serif; color: #111827; margin: 0; background: #f8fafc; }
+  main { padding: 24px; }
+  h1 { margin: 0 0 8px; font-size: 24px; }
+  p { margin: 0; }
+  .page-subtitle { margin-bottom: 20px; color: #475569; }
+  .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+  .card-header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+  .muted { color: #64748b; margin-top: 4px; }
+  .pill { border: 1px solid #7dd3fc; color: #0f172a; background: #e0f2fe; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .fact { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; }
+  .fact-label { display: block; color: #64748b; font-size: 12px; margin-bottom: 4px; }
+  .fact-value { display: block; color: #0f172a; font-weight: 700; }
+  .summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+  .summary-title { font-weight: 700; margin-bottom: 8px; }
+  .removal { color: #86198f; margin-top: 8px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  th { font-size: 12px; color: #475569; text-transform: uppercase; letter-spacing: .04em; }
+`;
+
 export default function Punishments() {
   const { userData, isAdmin, accessToken } = useData();
   const [punishments, setPunishments] = useState<GuildWeeklyPunishmentDto[]>([]);
@@ -116,7 +211,7 @@ export default function Punishments() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  const loadPunishments = async (weekKey?: string) => {
+  const loadPunishments = async () => {
     if (!accessToken) {
       return;
     }
@@ -125,11 +220,8 @@ export default function Punishments() {
     setError(null);
 
     try {
-      const next = await fetchGuildWeeklyPunishments(accessToken, weekKey);
+      const next = await fetchGuildWeeklyPunishments(accessToken);
       setPunishments(next);
-      if (!selectedWeekKey && next[0]?.weekKey) {
-        setSelectedWeekKey(next[0].weekKey);
-      }
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Falha ao carregar as punições.");
     } finally {
@@ -141,25 +233,37 @@ export default function Punishments() {
     void loadPunishments();
   }, [accessToken]);
 
+  const currentWeekKey = useMemo(() => getBrazilWeekKeyForDate(), []);
+
+  const completedPunishments = useMemo(
+    () => punishments.filter((punishment) => punishment.weekKey < currentWeekKey),
+    [currentWeekKey, punishments],
+  );
+
+  const availableWeekKeys = useMemo(() => {
+    const keys = [...new Set(completedPunishments.map((punishment) => punishment.weekKey))];
+    return keys.sort((left, right) => right.localeCompare(left));
+  }, [completedPunishments]);
+
   useEffect(() => {
-    if (!selectedWeekKey) {
+    if (availableWeekKeys.length === 0) {
+      if (selectedWeekKey) {
+        setSelectedWeekKey("");
+      }
       return;
     }
 
-    void loadPunishments(selectedWeekKey);
-  }, [selectedWeekKey]);
-
-  const availableWeekKeys = useMemo(
-    () => [...new Set(punishments.map((punishment) => punishment.weekKey))],
-    [punishments],
-  );
+    if (!selectedWeekKey || !availableWeekKeys.includes(selectedWeekKey)) {
+      setSelectedWeekKey(availableWeekKeys[0]);
+    }
+  }, [availableWeekKeys, selectedWeekKey]);
 
   const visiblePunishments = useMemo(
     () =>
       selectedWeekKey
-        ? punishments.filter((punishment) => punishment.weekKey === selectedWeekKey)
-        : punishments,
-    [punishments, selectedWeekKey],
+        ? completedPunishments.filter((punishment) => punishment.weekKey === selectedWeekKey)
+        : completedPunishments,
+    [completedPunishments, selectedWeekKey],
   );
 
   const summary = useMemo(
@@ -200,12 +304,11 @@ export default function Punishments() {
 
     try {
       const run = await runGuildWeeklyPunishmentEvaluation(accessToken);
-      setSelectedWeekKey(run.weekKey);
-      await loadPunishments(run.weekKey);
+      await loadPunishments();
       setMessage(
         run.skipped
-          ? `Avaliação semanal verificada: ${cleanMojibake(run.reason)}`
-          : `Avaliação semanal concluída para ${run.weekKey}. ${run.saved} registro(s) persistido(s).`,
+          ? `Avaliação verificada: ${cleanMojibake(run.reason)}`
+          : `Avaliação concluída para ${run.weekKey}. ${run.saved} registro(s) persistido(s).`,
       );
     } catch (runError) {
       setError(
@@ -228,21 +331,17 @@ export default function Punishments() {
     const fileTitle = sanitizeFileName(`CD9_lista_punidos_semana_${punishedThisWeek[0].weekKey}`);
     const rows = punishedThisWeek
       .map((punishment) => {
-        const punishedEvents = punishment.punishedEventKeys.length
-          ? punishment.punishedEventKeys
-              .map((eventKey) => eventLabelMap[eventKey] ?? eventKey)
-              .join(" • ")
-          : "Nenhum";
+        const punishedEvents = formatEventList(getRelevantEventKeys(punishment));
         const details = punishment.events
           .filter((event) => event.punishmentApplied)
           .map(
             (event) => `
-                <tr>
-                  <td>${escapeHtml(cleanMojibake(event.label))}</td>
-                  <td>${event.completed}/${event.expected}</td>
-                  <td>${escapeHtml(cleanMojibake(event.reason))}</td>
-                </tr>
-              `,
+              <tr>
+                <td>${escapeHtml(cleanMojibake(event.label))}</td>
+                <td>${event.completed}/${event.expected}</td>
+                <td>${escapeHtml(cleanMojibake(event.reason))}</td>
+              </tr>
+            `,
           )
           .join("");
 
@@ -300,7 +399,22 @@ export default function Punishments() {
       })
       .join("");
 
-    const printableHtml = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8" /><meta name="viewport" content="width=1024, initial-scale=1" /><title>${escapeHtml(fileTitle)}</title></head><body><main><h1>Lista de punidos da semana</h1><p>Semana ${escapeHtml(weekLabel)} • ${punishedThisWeek.length} membro(s)</p>${rows}</main></body></html>`;
+    const printableHtml = `<!doctype html>
+      <html lang="pt-BR">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=1024, initial-scale=1" />
+          <title>${escapeHtml(fileTitle)}</title>
+          <style>${buildPdfStyles()}</style>
+        </head>
+        <body>
+          <main>
+            <h1>Lista de punidos da semana</h1>
+            <p class="page-subtitle">Semana ${escapeHtml(weekLabel)} • ${punishedThisWeek.length} membro(s)</p>
+            ${rows}
+          </main>
+        </body>
+      </html>`;
 
     const iframe = document.createElement("iframe");
     iframe.style.position = "fixed";
@@ -382,7 +496,7 @@ export default function Punishments() {
 
             <Button
               type="button"
-              onClick={() => void loadPunishments(selectedWeekKey)}
+              onClick={() => void loadPunishments()}
               disabled={isLoading || !accessToken}
               className="clandestino-action-button clandestino-action-button--refresh !text-cyan-50"
             >
@@ -417,9 +531,9 @@ export default function Punishments() {
               <div className="clandestino-page-header__eyebrow">Registro histórico semanal</div>
               <CardTitle className="clandestino-page-header__title text-white">Punições da Semana</CardTitle>
               <CardDescription className="clandestino-page-header__description text-slate-300">
-                Esta página mostra o registro histórico da semana avaliada. Aqui a liderança vê quem foi
-                punido naquela semana, quem estava em carência naquela mesma semana e quais conteúdos
-                causaram o bloqueio.
+                Esta página mostra apenas semanas já fechadas. Aqui a liderança vê quem foi punido na
+                semana avaliada, quem cumpriu castigo nessa mesma janela e quem acabou marcado para
+                remoção por falhar durante a suspensão.
               </CardDescription>
             </div>
           </CardHeader>
@@ -468,9 +582,9 @@ export default function Punishments() {
                 </Select>
               </div>
               <div className="rounded-xl border border-slate-700/60 bg-slate-950/20 p-4 text-sm text-slate-300">
-                Todo domingo às 22:00 de Brasília o backend avalia a participação da semana fechada.
-                A partir de segunda às 12:00 de Brasília ele também avalia setup de defesa, exigindo
-                5 defesas de GW e ao menos 3 de Siege. A suspensão semanal vale até sábado às 23:59.
+                Todo domingo às 22:00 de Brasília o backend avalia a semana anterior. Esta tela ignora
+                por padrão os avisos e setups da semana corrente, para não misturar o registro histórico
+                da punição com alertas operacionais ainda em andamento.
               </div>
             </div>
 
@@ -493,102 +607,104 @@ export default function Punishments() {
               {visiblePunishments.length === 0 ? (
                 <Card className="border border-slate-700/60 bg-slate-900/50">
                   <CardContent className="pt-6 text-center text-slate-400">
-                    Nenhuma punição semanal foi registrada ainda. Rode a avaliação manual ou aguarde
-                    as janelas automáticas de domingo às 22:00 e segunda às 12:00.
+                    Nenhuma punição semanal fechada foi registrada ainda. Rode a avaliação manual ou
+                    aguarde a janela automática de domingo às 22:00.
                   </CardContent>
                 </Card>
               ) : (
-                visiblePunishments.map((punishment) => (
-                  <Card
-                    key={`${punishment.weekKey}-${punishment.wizardId}`}
-                    className="border border-slate-700/60 bg-slate-900/50"
-                  >
-                    <CardContent className="space-y-4 pt-6">
-                      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-                        <div className="space-y-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="text-base font-semibold text-white">{punishment.memberName}</p>
-                            <Badge className="clandestino-badge border-sky-500/30 bg-sky-500/10 text-sky-200">
-                              {formatRole(punishment.role)}
-                            </Badge>
-                            <DisciplineStatus
-                              punishment={punishment}
-                              mode="record"
-                              labels={{
-                                punished: "Punido na semana",
-                                cooldown: "Em carência na semana",
-                                clear: "Sem punição",
-                              }}
-                            />
-                            {punishment.markedForRemoval ? (
-                              <Badge className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-100">
-                                Marcado para remoção
+                visiblePunishments.map((punishment) => {
+                  const relevantEventKeys = getRelevantEventKeys(punishment);
+                  const contentLabel = punishment.punishedEventKeys.length > 0
+                    ? "Conteúdos punidos"
+                    : punishment.markedForRemoval
+                      ? "Falhas críticas durante a suspensão"
+                      : "Conteúdos punidos";
+
+                  return (
+                    <Card
+                      key={`${punishment.weekKey}-${punishment.wizardId}`}
+                      className="border border-slate-700/60 bg-slate-900/50"
+                    >
+                      <CardContent className="space-y-4 pt-6">
+                        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                          <div className="space-y-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="text-base font-semibold text-white">{punishment.memberName}</p>
+                              <Badge className="clandestino-badge border-sky-500/30 bg-sky-500/10 text-sky-200">
+                                {formatRole(punishment.role)}
                               </Badge>
+                              <DisciplineStatus
+                                punishment={punishment}
+                                mode="record"
+                                labels={{
+                                  punished: "Punido na semana",
+                                  cooldown: "Em carência na semana",
+                                  clear: "Sem punição",
+                                }}
+                              />
+                              {punishment.markedForRemoval ? (
+                                <Badge className="border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-100">
+                                  Marcado para remoção
+                                </Badge>
+                              ) : null}
+                            </div>
+                            <p className="text-sm text-slate-400">
+                              Semana {formatWeekLabel(punishment)} • avaliado em{" "}
+                              {formatDateTime(punishment.evaluatedAt)}
+                            </p>
+                            <p className="text-sm text-slate-300">{cleanMojibake(punishment.reasonSummary)}</p>
+                            {punishment.removalReasonSummary ? (
+                              <p className="text-sm text-fuchsia-200">
+                                {cleanMojibake(punishment.removalReasonSummary)}
+                              </p>
                             ) : null}
                           </div>
-                          <p className="text-sm text-slate-400">
-                            Semana {formatWeekLabel(punishment)} • avaliado em{" "}
-                            {formatDateTime(punishment.evaluatedAt)}
-                          </p>
-                          <p className="text-sm text-slate-300">{cleanMojibake(punishment.reasonSummary)}</p>
-                          {punishment.removalReasonSummary ? (
-                            <p className="text-sm text-fuchsia-200">
-                              {cleanMojibake(punishment.removalReasonSummary)}
-                            </p>
-                          ) : null}
-                        </div>
 
-                        <div className="rounded-xl border border-slate-700/60 bg-slate-950/30 p-4 text-sm text-slate-300 xl:min-w-72">
-                          <div className="flex items-center gap-2 text-slate-200">
-                            <CalendarDays className="h-4 w-4 text-cyan-300" />
-                            <span className="font-medium">Próxima elegibilidade</span>
-                          </div>
-                          <p className="mt-2 text-white">
-                            {punishment.nextEligiblePenaltyAt
-                              ? formatDateTime(punishment.nextEligiblePenaltyAt)
-                              : "Sem bloqueio de carência"}
-                          </p>
-                          <p className="mt-2 text-xs text-slate-500">
-                            Conteúdos punidos:{" "}
-                            {punishment.punishedEventKeys.length > 0
-                              ? punishment.punishedEventKeys
-                                  .map((eventKey) => eventLabelMap[eventKey] ?? eventKey)
-                                  .join(" • ")
-                              : "nenhum"}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                        {punishment.events.map((event) => (
-                          <div
-                            key={`${punishment.wizardId}-${event.eventKey}`}
-                            className="rounded-xl border border-slate-700/60 bg-slate-950/30 p-4"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="text-sm font-semibold text-white">
-                                {cleanMojibake(event.label)}
-                              </p>
-                              {event.punishmentApplied ? (
-                                <ShieldAlert className="h-4 w-4 text-red-300" />
-                              ) : event.required ? (
-                                <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                              ) : (
-                                <ShieldMinus className="h-4 w-4 text-slate-400" />
-                              )}
+                          <div className="rounded-xl border border-slate-700/60 bg-slate-950/30 p-4 text-sm text-slate-300 xl:min-w-72">
+                            <div className="flex items-center gap-2 text-slate-200">
+                              <CalendarDays className="h-4 w-4 text-cyan-300" />
+                              <span className="font-medium">Próxima elegibilidade</span>
                             </div>
-                            <p className="mt-2 text-sm text-slate-300">
-                              {event.completed}/{event.expected}
+                            <p className="mt-2 text-white">
+                              {punishment.nextEligiblePenaltyAt
+                                ? formatDateTime(punishment.nextEligiblePenaltyAt)
+                                : "Sem bloqueio de carência"}
                             </p>
-                            <p className="mt-2 text-xs leading-5 text-slate-500">
-                              {cleanMojibake(event.reason)}
+                            <p className="mt-2 text-xs text-slate-500">
+                              {contentLabel}: {formatEventList(relevantEventKeys)}
                             </p>
                           </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
+                        </div>
+
+                        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                          {punishment.events.map((event) => (
+                            <div
+                              key={`${punishment.wizardId}-${event.eventKey}`}
+                              className="rounded-xl border border-slate-700/60 bg-slate-950/30 p-4"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <p className="text-sm font-semibold text-white">{cleanMojibake(event.label)}</p>
+                                {event.punishmentApplied ? (
+                                  <ShieldAlert className="h-4 w-4 text-red-300" />
+                                ) : event.required ? (
+                                  <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                                ) : (
+                                  <ShieldMinus className="h-4 w-4 text-slate-400" />
+                                )}
+                              </div>
+                              <p className="mt-2 text-sm text-slate-300">
+                                {event.completed}/{event.expected}
+                              </p>
+                              <p className="mt-2 text-xs leading-5 text-slate-500">
+                                {cleanMojibake(event.reason)}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })
               )}
             </div>
           </CardContent>
