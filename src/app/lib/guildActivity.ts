@@ -5,6 +5,7 @@ import type {
   TeamCompositionDto,
   TeamUsageSummaryDto,
 } from "./guildImport";
+import { getSubjugationStatus } from "./subjugation";
 
 export type GuildActivityEventKey = "labyrinth" | "guildWar" | "siege" | "subjugation";
 
@@ -299,11 +300,6 @@ const hasLabyrinthParticipation = (member: GuildCurrentMemberStateDto) =>
       member.labyrinth.isMvp,
   );
 
-const SUBJUGATION_FULL_CLEAR_MIN_SCORE = 4_200_000;
-
-const hasSubjugationParticipation = (member: GuildCurrentMemberStateDto) =>
-  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_FULL_CLEAR_MIN_SCORE;
-
 const buildWindowProgress = (
   key: string,
   label: string,
@@ -595,14 +591,15 @@ const buildLabyrinthProgress = (member: GuildCurrentMemberStateDto): WeeklyEvent
 };
 
 const buildSubjugationProgress = (member: GuildCurrentMemberStateDto): WeeklyEventMemberProgress => {
-  const participated = hasSubjugationParticipation(member);
+  const status = getSubjugationStatus(member.subjugation);
+  const participated = status.completed;
   const completed = participated ? 1 : 0;
-  const score = member.subjugation.clearScore ?? 0;
+  const score = status.score;
 
   return {
     hasData:
       member.coverage.subjugation ||
-      (member.subjugation.clearScore ?? 0) > 0 ||
+      status.hasAnyParticipation ||
       (member.subjugation.contributeRatio ?? 0) > 0 ||
       member.subjugation.rank !== undefined,
     completed,
@@ -630,6 +627,8 @@ const buildSubjugationProgress = (member: GuildCurrentMemberStateDto): WeeklyEve
       score: member.subjugation.clearScore,
       rank: member.subjugation.rank,
       contributionRate: member.subjugation.contributeRatio,
+      miniBossesCompleted: status.completedMiniBosses,
+      bossCompleted: status.completedBosses,
     },
   };
 };

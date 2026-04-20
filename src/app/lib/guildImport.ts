@@ -319,6 +319,7 @@ export interface GuildCurrentMemberStateDto {
     channelUid?: number;
     level?: number;
     ratingId?: number;
+    joinedAt?: string;
     guildId?: number;
     guildName?: string;
     guildRole?: "member" | "senior" | "vice-leader" | "leader";
@@ -335,6 +336,17 @@ export interface GuildCurrentMemberStateDto {
     contributeRatio?: number;
     rank?: number;
     lastUpdated?: string;
+    weekNum?: number;
+    miniBossTypes?: number[];
+    bossTypes?: number[];
+    battleLogs?: Array<{
+      battleType: number;
+      clearScore?: number;
+      battleCount?: number;
+      dateAdd?: string;
+      dateMod?: string;
+      bossDetected?: boolean;
+    }>;
   };
   labyrinth: {
     score?: number;
@@ -365,6 +377,12 @@ export interface GuildCurrentStateDto {
   snapshotId: string;
   updatedAt: string;
   activeRosterWizardIds?: number[];
+  labyrinthStatus?: {
+    startAt?: string;
+    finishAt?: string;
+    nextStartAt?: string;
+    status?: number;
+  };
   siegeMatches: SiegeMatchSummaryDto[];
   members: GuildCurrentMemberStateDto[];
 }

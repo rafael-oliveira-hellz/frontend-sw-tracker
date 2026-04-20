@@ -1,13 +1,21 @@
-import { AlertCircle, ArrowLeft, Droplet, Flame, Loader2, RefreshCcw, Skull, Wind } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Droplet,
+  Flame,
+  Loader2,
+  RefreshCcw,
+  Skull,
+  Wind,
+} from "lucide-react";
 import { Link } from "react-router";
 
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { useData } from "../context/DataContext";
+import { getSubjugationStatus } from "../lib/subjugation";
 import { useGuildCurrentState } from "../lib/useGuildCurrentState";
-
-const SUBJUGATION_FULL_CLEAR_MIN_SCORE = 4_200_000;
 
 const getElementColor = (element: string) => {
   switch (element) {
@@ -48,14 +56,13 @@ export default function MonsterSubjugation() {
   if (!userData) return null;
 
   const score = currentMember?.subjugation.clearScore ?? 0;
-  const hasSubjugationData = score >= SUBJUGATION_FULL_CLEAR_MIN_SCORE;
+  const subjugationStatus = getSubjugationStatus(currentMember?.subjugation);
   const fronts = [
-    { label: "Fogo", completed: hasSubjugationData },
-    { label: "Água", completed: hasSubjugationData },
-    { label: "Vento", completed: hasSubjugationData },
-    { label: "Boss Slime", completed: hasSubjugationData },
+    { label: "Fogo", completed: subjugationStatus.miniBossTypes.includes(101) },
+    { label: "Água", completed: subjugationStatus.miniBossTypes.includes(102) },
+    { label: "Vento", completed: subjugationStatus.miniBossTypes.includes(103) },
+    { label: "Boss Slime", completed: subjugationStatus.completedBosses > 0 },
   ];
-  const completedFronts = hasSubjugationData ? 1 : 0;
 
   return (
     <div className="clandestino-shell p-4 sm:p-6">
@@ -117,9 +124,11 @@ export default function MonsterSubjugation() {
             <div className="rounded-lg bg-purple-500/10 p-4">
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm text-slate-300">Estado atual do ciclo</span>
-                <span className="font-bold text-white">{completedFronts} / 4 frentes</span>
+                <span className="font-bold text-white">
+                  {subjugationStatus.frontsCompleted} / {subjugationStatus.frontsExpected} frentes
+                </span>
               </div>
-              {score > 0 && !hasSubjugationData ? (
+              {subjugationStatus.incomplete ? (
                 <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-100">
                   Subjugação incompleta.
                 </div>
@@ -132,11 +141,17 @@ export default function MonsterSubjugation() {
                       front.completed ? "border-2 border-green-500 bg-green-500/10" : "bg-slate-950/40"
                     }`}
                   >
-                    <div className={`rounded-full bg-gradient-to-br p-2 text-white ${getElementColor(front.label)}`}>
+                    <div
+                      className={`rounded-full bg-gradient-to-br p-2 text-white ${getElementColor(front.label)}`}
+                    >
                       {getElementIcon(front.label)}
                     </div>
-                    <span className="text-sm font-medium text-center text-white">{front.label}</span>
-                    {front.completed && <span className="text-xs font-semibold text-green-400">Consolidado</span>}
+                    <span className="text-center text-sm font-medium text-white">{front.label}</span>
+                    {front.completed ? (
+                      <span className="text-xs font-semibold text-green-400">Consolidado</span>
+                    ) : (
+                      <span className="text-xs font-semibold text-slate-500">Pendente</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -145,11 +160,13 @@ export default function MonsterSubjugation() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="rounded-lg bg-slate-950/50 p-4">
                 <div className="text-sm text-slate-400">Score</div>
-                <div className="mt-1 text-2xl font-semibold text-white">{currentMember?.subjugation.clearScore ?? 0}</div>
+                <div className="mt-1 text-2xl font-semibold text-white">{score}</div>
               </div>
               <div className="rounded-lg bg-slate-950/50 p-4">
                 <div className="text-sm text-slate-400">Rank</div>
-                <div className="mt-1 text-2xl font-semibold text-white">{currentMember?.subjugation.rank ?? "-"}</div>
+                <div className="mt-1 text-2xl font-semibold text-white">
+                  {currentMember?.subjugation.rank ?? "-"}
+                </div>
               </div>
               <div className="rounded-lg bg-slate-950/50 p-4">
                 <div className="text-sm text-slate-400">Contribuição</div>

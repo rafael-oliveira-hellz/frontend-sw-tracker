@@ -21,6 +21,7 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { useData } from "../context/DataContext";
 import { GUILD_IMPORT_COMPLETED_EVENT } from "../lib/guildImport";
+import { getSubjugationStatus } from "../lib/subjugation";
 import { useGuildCurrentState } from "../lib/useGuildCurrentState";
 import { useWeeklyPunishments } from "../lib/useWeeklyPunishments";
 
@@ -49,10 +50,14 @@ const hasLabyrinthParticipation = (member: { labyrinth: { score?: number; contri
       member.labyrinth.isMvp,
   );
 
-const SUBJUGATION_FULL_CLEAR_MIN_SCORE = 4_200_000;
-
-const hasSubjugationParticipation = (member: { subjugation: { clearScore?: number; contributeRatio?: number } }) =>
-  (member.subjugation.clearScore ?? 0) >= SUBJUGATION_FULL_CLEAR_MIN_SCORE;
+const hasSubjugationParticipation = (member: {
+  subjugation: {
+    clearScore?: number;
+    miniBossTypes?: number[];
+    bossTypes?: number[];
+    battleLogs?: Array<{ battleType: number }>;
+  };
+}) => getSubjugationStatus(member.subjugation).completed;
 
 function AdminPanelSkeleton({ title, description }: { title: string; description: string }) {
   return (

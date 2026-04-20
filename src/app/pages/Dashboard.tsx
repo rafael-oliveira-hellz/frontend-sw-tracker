@@ -26,6 +26,7 @@ import { useData } from "../context/DataContext";
 import { useGuildWeek } from "../context/GuildWeekContext";
 import { buildGuildActivityOverview } from "../lib/guildActivity";
 import { formatTeamLabel } from "../lib/monsterCatalog";
+import { getSubjugationStatus } from "../lib/subjugation";
 import { useWeeklyPunishments } from "../lib/useWeeklyPunishments";
 import { useGuildCurrentState } from "../lib/useGuildCurrentState";
 
@@ -88,7 +89,7 @@ export default function Dashboard() {
   const labyrinthUsed = currentMember?.labyrinth.score ? 1 : 0;
   const siegeUsed = currentWeekRow?.siege.completed ?? 0;
   const guildBattleUsed = currentWeekRow?.guildWar.extra?.warsCompleted ?? 0;
-  const subjugationUsed = currentMember?.subjugation.clearScore ? 1 : 0;
+  const subjugationUsed = currentMember && getSubjugationStatus(currentMember.subjugation).completed ? 1 : 0;
   const defensesTotal =
     (currentMember?.guildWar.defenses.length ?? 0) + (currentMember?.siege.defenses.length ?? 0);
   const siegeHint = currentWeekRow?.siege.hint ?? "Limite semanal de até 60 ataques";
